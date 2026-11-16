@@ -1,0 +1,8 @@
+# WDCTools intermediate files
+*.obj
+*.lst
+*.map
+*.sym
+__pycache__/
+# personal notes
+aprs/wdc_email.txt
