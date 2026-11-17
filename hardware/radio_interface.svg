@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1050" viewBox="0 0 1240 1050" font-family="Helvetica, Arial, sans-serif">
+<rect width="100%" height="100%" fill="white"/>
+<text x="620" y="34" font-size="20" text-anchor="middle" fill="#1a1a1a" font-weight="bold">MyMENSCH Rev-C software TNC - radio interface (1200 baud AFSK)</text>
+<text x="620" y="56" font-size="13" text-anchor="middle" fill="#555" font-weight="normal" font-style="italic">Rev 0.1 draft - J4 pin choices are provisional until regmap.bin confirms VIA_B port A</text>
+<rect x="40" y="90" width="170" height="780" rx="8" fill="#f6f6f6" stroke="#1a1a1a" stroke-width="2"/>
+<text x="125" y="118" font-size="16" text-anchor="middle" fill="#1a1a1a" font-weight="bold">RADIO</text>
+<text x="125" y="136" font-size="11" text-anchor="middle" fill="#555" font-weight="normal">(HT / mobile data port)</text>
+<rect x="1010" y="90" width="200" height="780" rx="8" fill="#f6f6f6" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1110" y="118" font-size="16" text-anchor="middle" fill="#1a1a1a" font-weight="bold">MyMENSCH J4</text>
+<text x="1110" y="136" font-size="11" text-anchor="middle" fill="#555" font-weight="normal">3.3 V logic only</text>
+<text x="240" y="150" font-size="13" text-anchor="start" fill="#0b5cad" font-weight="bold">RECEIVE  -  audio to logic level (comparator with hysteresis)</text>
+<text x="240" y="448" font-size="13" text-anchor="start" fill="#0b5cad" font-weight="bold">TRANSMIT  -  4-bit R-2R DAC, low-pass, level set</text>
+<text x="240" y="712" font-size="13" text-anchor="start" fill="#0b5cad" font-weight="bold">PTT  -  open-drain key, held off during reset</text>
+<circle cx="210" cy="215" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="200" y="219" font-size="13" text-anchor="end" fill="#1a1a1a" font-weight="bold">AUDIO OUT</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="210,215 250,215"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="250,215 271,215"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="279,215 300,215"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="271,204 271,226"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="279,204 279,226"/>
+<text x="275" y="243" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">C1 1µF</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="300,215 330,215"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="330,215 350,215 352.5,221 357.5,209 362.5,221 367.5,209 372.5,221 377.5,209 380,215 400,215"/>
+<text x="365" y="239" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R1 10k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="400,215 450,215"/>
+<circle cx="450" cy="215" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="450,215 560,215"/>
+<polygon points="560,190 560,290 660,240" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="570" y="220" font-size="16" text-anchor="start" fill="#1a1a1a" font-weight="bold">+</text>
+<text x="570" y="270" font-size="18" text-anchor="start" fill="#1a1a1a" font-weight="bold">−</text>
+<text x="612" y="312" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">U1A ½ LM393</text>
+<text x="612" y="326" font-size="10" text-anchor="middle" fill="#555" font-weight="normal">pin 8 +3V3, pin 4 GND</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="450,215 450,180"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="450,180 570,180 572.5,186 577.5,174 582.5,186 587.5,174 592.5,186 597.5,174 600,180 720,180"/>
+<text x="585" y="168" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R3 1M</text>
+<text x="728" y="184" font-size="11" text-anchor="start" fill="#555" font-weight="normal" font-style="italic">hysteresis</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="720,180 720,240"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="660,240 720,240"/>
+<circle cx="720" cy="240" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="720,240 800,240"/>
+<circle cx="800" cy="240" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="800,240 800,200 806,202.5 794,207.5 806,212.5 794,217.5 806,222.5 794,227.5 800,230 800,190"/>
+<text x="812" y="219" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">R6 10k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="800,190 800,182"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="791,182 809,182"/>
+<text x="800" y="177" font-size="12" text-anchor="middle" fill="#0b5cad" font-weight="bold">+3V3</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="800,240 1010,240"/>
+<circle cx="1010" cy="240" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="244" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">29  VIA_B_PA7  RX in</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="450,215 450,267.5 456,270 444,275 456,280 444,285 456,290 444,295 450,297.5 450,350"/>
+<text x="438" y="286.5" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R2 100k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="560,265 530,265 530,350"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="300,350 530,350"/>
+<circle cx="450" cy="350" r="3.5" fill="#1a1a1a"/>
+<circle cx="530" cy="350" r="3.5" fill="#1a1a1a"/>
+<text x="490" y="366" font-size="11" text-anchor="middle" fill="#0b5cad" font-weight="normal">VREF ≈ 1.3 V</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="300,350 300,305 306,307.5 294,312.5 306,317.5 294,322.5 306,327.5 294,332.5 300,335 300,290"/>
+<text x="288" y="324" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R4 10k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="300,290 300,282"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="291,282 309,282"/>
+<text x="300" y="277" font-size="12" text-anchor="middle" fill="#0b5cad" font-weight="bold">+3V3</text>
+<circle cx="300" cy="350" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="360,350 360,360 366,362.5 354,367.5 366,372.5 354,377.5 366,382.5 354,387.5 360,390 360,400"/>
+<text x="348" y="379" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R5 6.8k</text>
+<circle cx="360" cy="350" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="360,400 360,410"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="348,410 372,410"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="352,414 368,414"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="356,418 364,418"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="410,350 410,371"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="410,379 410,400"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="399,371 421,371"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="399,379 421,379"/>
+<text x="394" y="368" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">+</text>
+<text x="426" y="379" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">C2 10µF</text>
+<circle cx="410" cy="350" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="410,400 410,410"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="398,410 422,410"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="402,414 418,414"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="406,418 414,418"/>
+<circle cx="1010" cy="490" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="494" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">37  VIA_B_PA3  DAC b3</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,490 925,490 927.5,496 932.5,484 937.5,496 942.5,484 947.5,496 952.5,484 955,490 1010,490"/>
+<text x="940" y="478" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R10 20k</text>
+<circle cx="870" cy="490" r="3.5" fill="#1a1a1a"/>
+<circle cx="1010" cy="540" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="544" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">39  VIA_B_PA2  DAC b2</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,540 925,540 927.5,546 932.5,534 937.5,546 942.5,534 947.5,546 952.5,534 955,540 1010,540"/>
+<text x="940" y="528" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R11 20k</text>
+<circle cx="870" cy="540" r="3.5" fill="#1a1a1a"/>
+<circle cx="1010" cy="590" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="594" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">41  VIA_B_PA1  DAC b1</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,590 925,590 927.5,596 932.5,584 937.5,596 942.5,584 947.5,596 952.5,584 955,590 1010,590"/>
+<text x="940" y="578" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R12 20k</text>
+<circle cx="870" cy="590" r="3.5" fill="#1a1a1a"/>
+<circle cx="1010" cy="640" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="644" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">43  VIA_B_PA0  DAC b0</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,640 925,640 927.5,646 932.5,634 937.5,646 942.5,634 947.5,646 952.5,634 955,640 1010,640"/>
+<text x="940" y="628" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R13 20k</text>
+<circle cx="870" cy="640" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,490 870,500 876,502.5 864,507.5 876,512.5 864,517.5 876,522.5 864,527.5 870,530 870,540"/>
+<text x="858" y="519" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R14 10k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,540 870,550 876,552.5 864,557.5 876,562.5 864,567.5 876,572.5 864,577.5 870,580 870,590"/>
+<text x="858" y="569" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R15 10k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,590 870,600 876,602.5 864,607.5 876,612.5 864,617.5 876,622.5 864,627.5 870,630 870,640"/>
+<text x="858" y="619" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R16 10k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,640 870,655 876,657.5 864,662.5 876,667.5 864,672.5 876,677.5 864,682.5 870,685 870,700"/>
+<text x="858" y="674" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R17 20k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,700 870,710"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="858,710 882,710"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="862,714 878,714"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="866,718 874,718"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,490 870,470 790,470"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="720,470 740,470 742.5,476 747.5,464 752.5,476 757.5,464 762.5,476 767.5,464 770,470 790,470"/>
+<text x="755" y="458" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R7 4.7k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="720,470 660,470"/>
+<circle cx="660" cy="470" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="660,470 660,496"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="660,504 660,530"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="649,496 671,496"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="649,504 671,504"/>
+<text x="676" y="504" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">C3 10nF</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="660,530 660,540"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="648,540 672,540"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="652,544 668,544"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="656,548 664,548"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="660,470 600,470"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="560,470 576,470"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="584,470 600,470"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="576,459 576,481"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="584,459 584,481"/>
+<text x="580" y="453" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">C4 1µF</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="560,470 500,470"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="500,470 500,505 506,507.5 494,512.5 506,517.5 494,522.5 506,527.5 494,532.5 500,535 500,570"/>
+<text x="512" y="524" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">RV1 10k level</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="500,570 500,580"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="488,580 512,580"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="492,584 508,584"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="496,588 504,588"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="210,520 470,520"/>
+<polygon points="488,520 474,514 474,526" fill="#1a1a1a"/>
+<circle cx="210" cy="520" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="200" y="524" font-size="13" text-anchor="end" fill="#1a1a1a" font-weight="bold">MIC IN</text>
+<text x="340" y="542" font-size="10" text-anchor="middle" fill="#555" font-weight="normal" font-style="italic">add 47k in series for mic-level radios</text>
+<circle cx="1010" cy="780" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="784" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">35  VIA_B_PA4  PTT</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="900,780 940,780 942.5,786 947.5,774 952.5,786 957.5,774 962.5,786 967.5,774 970,780 1010,780"/>
+<text x="955" y="768" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R8 100Ω</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="900,780 840,780"/>
+<circle cx="840" cy="780" r="3.5" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="840,780 840,795 846,797.5 834,802.5 846,807.5 834,812.5 846,817.5 834,822.5 840,825 840,840"/>
+<text x="852" y="814" font-size="12" text-anchor="start" fill="#1a1a1a" font-weight="normal">R9 100k</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="840,840 840,850"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="828,850 852,850"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="832,854 848,854"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="836,858 844,858"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="840,780 772,780"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="772,760 772,800"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="782,756 782,804"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="782,762 800,762 800,740"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="782,798 800,798 800,830"/>
+<polygon points="783,798 793,793 793,803" fill="#1a1a1a"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="800,830 800,840"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="788,840 812,840"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="792,844 808,844"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="796,848 804,848"/>
+<text x="745" y="830" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">Q1 2N7000</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="800,740 210,740"/>
+<circle cx="210" cy="740" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="200" y="744" font-size="13" text-anchor="end" fill="#1a1a1a" font-weight="bold">PTT</text>
+<circle cx="210" cy="840" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="200" y="844" font-size="13" text-anchor="end" fill="#1a1a1a" font-weight="bold">GND</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="210,840 300,840"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="300,840 300,850"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="288,850 312,850"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="292,854 308,854"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="296,858 304,858"/>
+<circle cx="1010" cy="850" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="854" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">49  VSS (GND)</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="1010,850 960,850"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="960,850 960,860"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="948,860 972,860"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="952,864 968,864"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="956,868 964,868"/>
+<circle cx="1010" cy="170" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1020" y="174" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">50  VDD  +3V3 out</text>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="1010,170 960,170"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="960,170 960,162"/>
+<polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="951,162 969,162"/>
+<text x="960" y="157" font-size="12" text-anchor="middle" fill="#0b5cad" font-weight="bold">+3V3</text>
+<rect x="40" y="902" width="1160" height="128" rx="8" fill="#fbfbf4" stroke="#bbb"/>
+<text x="56" y="924" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• Parts: U1 LM393 (one half used; tie unused inputs +3V3/GND), Q1 2N7000, RV1 10k trimpot, resistors 1/4 W 5% (20k = two 10k in series is fine).</text>
+<text x="56" y="942" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• RX: C1/R1 couple the audio onto VREF; R3 adds ~30 mV hysteresis so noise between tones does not chatter. Feed 0.2-2 Vpp; set radio volume to mid.</text>
+<text x="56" y="960" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• TX: the CPU steps PA0-PA3 through a 16-step sine at a fixed rate; R7/C3 (3.4 kHz) smooths the steps; C4 blocks DC; RV1 sets deviation.</text>
+<text x="56" y="978" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• PTT: VIA pins are inputs after reset, so R9 holds Q1 off and the radio stays unkeyed. Firmware also limits key-down time.</text>
+<text x="56" y="996" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• HTs with a Kenwood 2-pin jack key PTT through the mic line: wire Q1 drain to MIC via 2.2k instead. Check your radio manual before connecting.</text>
+<text x="56" y="1014" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• All grounds common: radio GND to J4 pin 49. Nothing on J4 may see more than 3.3 V.</text>
+</svg>
