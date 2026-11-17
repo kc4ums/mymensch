@@ -2,7 +2,7 @@
 import sys
 
 out = []
-W, H = 1240, 1050
+W, H = 1240, 1150
 INK = '#1a1a1a'
 NOTE = '#555'
 ACC = '#0b5cad'
@@ -104,19 +104,19 @@ def pin_r(x, y, num, label):     # pin on the left edge of the J4 box
 add('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" '
     'font-family="Helvetica, Arial, sans-serif">' % (W, H, W, H))
 add('<rect width="100%" height="100%" fill="white"/>')
-text(W / 2, 34, 'MyMENSCH Rev-C software TNC - radio interface (1200 baud AFSK)', 20,
+text(W / 2, 34, 'MyMENSCH Rev-C software TNC - Kenwood TM-V71A data port interface (1200 baud AFSK)', 20,
      'middle', weight='bold')
 text(W / 2, 56, 'Rev 0.1 draft - J4 pin choices are provisional until regmap.bin confirms VIA_B port A',
      13, 'middle', NOTE, italic=True)
 
 # radio box
 RX0 = 210
-add('<rect x="40" y="90" width="%d" height="780" rx="8" fill="#f6f6f6" stroke="%s" stroke-width="2"/>' % (RX0 - 40, INK))
-text(125, 118, 'RADIO', 16, 'middle', weight='bold')
-text(125, 136, '(HT / mobile data port)', 11, 'middle', NOTE)
+add('<rect x="40" y="90" width="%d" height="840" rx="8" fill="#f6f6f6" stroke="%s" stroke-width="2"/>' % (RX0 - 40, INK))
+text(125, 118, 'KENWOOD TM-V71A', 15, 'middle', weight='bold')
+text(125, 136, 'DATA jack, 6-pin mini-DIN (rear)', 11, 'middle', NOTE)
 # J4 box
 JX = 1010
-add('<rect x="%d" y="90" width="200" height="780" rx="8" fill="#f6f6f6" stroke="%s" stroke-width="2"/>' % (JX, INK))
+add('<rect x="%d" y="90" width="200" height="840" rx="8" fill="#f6f6f6" stroke="%s" stroke-width="2"/>' % (JX, INK))
 text(JX + 100, 118, 'MyMENSCH J4', 16, 'middle', weight='bold')
 text(JX + 100, 136, '3.3 V logic only', 11, 'middle', NOTE)
 
@@ -128,7 +128,7 @@ for y, s in ((150, 'RECEIVE  -  audio to logic level (comparator with hysteresis
 
 # ---------------------------------------------------------------- receive
 YA = 215                  # audio / + input line
-pin_l(RX0, YA, 'AUDIO OUT')
+pin_l(RX0, YA, '5  PR1 RX audio')
 wire((RX0, YA), (250, YA))
 cap_h(250, 300, YA, 'C1', '1µF', above=False)
 wire((300, YA), (330, YA))
@@ -207,10 +207,17 @@ wire((560, 470), (NE, 470))
 res_v(NE, 470, 570, 'RV1', '10k level', left=False)
 gnd(NE, 570)
 YM = 520
-wire((RX0, YM), (470, YM))
+wire((RX0, YM), (290, YM))
+dot(290, YM)
+res_v(290, YM, 580, 'R19', '2.2k', left=True)
+gnd(290, 580)
+wire((290, YM), (330, YM))
+res_h(330, 430, YM, 'R18', '100k', above=True)
+wire((430, YM), (470, YM))
 add('<polygon points="%g,%g %g,%g %g,%g" fill="%s"/>' % (488, YM, 474, YM - 6, 474, YM + 6, INK))
-pin_l(RX0, YM, 'MIC IN')
-text(340, YM + 22, 'add 47k in series for mic-level radios', 10, 'middle', NOTE, italic=True)
+pin_l(RX0, YM, '1  PKD TX audio')
+text(380, YM + 30, 'pad: ~2.5 Vpp -> ~40 mVpp', 10, 'middle', NOTE, italic=True)
+pin_l(RX0, 640, '4  PR9  n/c')
 
 # ---------------------------------------------------------------- PTT
 YP = 780
@@ -232,11 +239,11 @@ gnd(800, 830)
 text(745, YP + 50, 'Q1 2N7000', 12, 'middle')
 YPT = 740
 wire((800, YPT), (RX0, YPT))
-pin_l(RX0, YPT, 'PTT')
+pin_l(RX0, YPT, '3  PKS PTT')
 
 # grounds and supply pins
 YG = 840
-pin_l(RX0, YG, 'GND')
+pin_l(RX0, YG, '2  GND')
 wire((RX0, YG), (300, YG))
 gnd(300, YG)
 pin_r(JX, 850, '49', 'VSS (GND)')
@@ -246,15 +253,29 @@ pin_r(JX, 170, '50', 'VDD  +3V3 out')
 wire((JX, 170), (960, 170))
 vcc(960, 170)
 
+# ---------------------------------------------------------------- squelch
+YS = 890
+text(330, 874, 'SQUELCH  -  channel busy, 5 V -> 3.3 V divider', 13, color=ACC, weight='bold')
+pin_l(RX0, YS, '6  SQC busy')
+wire((RX0, YS), (560, YS))
+res_h(560, 650, YS, 'R20', '10k', above=False)
+wire((650, YS), (700, YS))
+dot(700, YS)
+res_v(700, YS, 950, 'R21', '20k')
+gnd(700, 950)
+wire((700, YS), (JX, YS))
+pin_r(JX, YS, '33', 'VIA_B_PA5  SQC in')
+
 # ---------------------------------------------------------------- notes
-NY = 902
-add('<rect x="40" y="%d" width="%d" height="128" rx="8" fill="#fbfbf4" stroke="#bbb"/>' % (NY, W - 80))
+NY = 990
+add('<rect x="40" y="%d" width="%d" height="146" rx="8" fill="#fbfbf4" stroke="#bbb"/>' % (NY, W - 80))
 notes = [
     'Parts: U1 LM393 (one half used; tie unused inputs +3V3/GND), Q1 2N7000, RV1 10k trimpot, resistors 1/4 W 5% (20k = two 10k in series is fine).',
-    'RX: C1/R1 couple the audio onto VREF; R3 adds ~30 mV hysteresis so noise between tones does not chatter. Feed 0.2-2 Vpp; set radio volume to mid.',
-    'TX: the CPU steps PA0-PA3 through a 16-step sine at a fixed rate; R7/C3 (3.4 kHz) smooths the steps; C4 blocks DC; RV1 sets deviation.',
-    'PTT: VIA pins are inputs after reset, so R9 holds Q1 off and the radio stays unkeyed. Firmware also limits key-down time.',
-    'HTs with a Kenwood 2-pin jack key PTT through the mic line: wire Q1 drain to MIC via 2.2k instead. Check your radio manual before connecting.',
+    'RX: PR1 is fixed-level 1200-baud audio (about 500 mVpp), not affected by the volume knob. C1/R1 put it on VREF; R3 adds ~30 mV hysteresis.',
+    'TX: the CPU steps PA0-PA3 through a 16-step sine; R7/C3 (3.4 kHz) smooth it; R18/R19 cut it ~55x since PKD wants ~40 mVpp; RV1 sets deviation (~3 kHz).',
+    'PTT: grounding PKS transmits. VIA pins are inputs after reset, so R9 holds Q1 off. Firmware also limits key-down time. SQC tells firmware the channel is busy.',
+    'Radio menu: set the DATA band to the band tuned to 144.390 MHz and data speed to 1200. Pin numbers per the TM-V71A manual - check which side the view is from.',
+    'A ready-made 6-pin mini-DIN cable avoids soldering the plug (some PS/2 cables have all 6 wires - check with a meter).',
     'All grounds common: radio GND to J4 pin 49. Nothing on J4 may see more than 3.3 V.',
 ]
 for i, n in enumerate(notes):
