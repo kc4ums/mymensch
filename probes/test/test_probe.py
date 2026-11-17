@@ -8,10 +8,11 @@ import os
 import random
 import sys
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools', 'emu'))
 from emu_mymensch import Board, load_s19
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-S19 = os.path.join(HERE, '..', 'probe', 'probe.s19')
+S19 = os.path.join(HERE, '..', 'probe.s19')
 
 CPS = 4                 # emulated cycles per instruction
 VIA, MUL, ADC = 0x7F20, 0x7FD0, 0x7FB0

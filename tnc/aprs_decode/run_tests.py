@@ -6,10 +6,11 @@
 import os
 import sys
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools', 'emu'))
 from emu_mymensch import Board, load_s19
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-S19 = os.path.join(HERE, '..', 'aprsrx.s19')
+S19 = os.path.join(HERE, 'aprsrx.s19')
 
 # (line sent by the TNC, strings that must appear in the decoded output)
 CASES = [

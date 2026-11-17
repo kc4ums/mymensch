@@ -6,13 +6,16 @@
 ;  Kenwood TM-V71A data port. No external TNC. Wiring:
 ;  hardware/radio_interface.svg.
 ;
-;    J4 pin 37/39/41/43  VIA_B PA3..PA0  4-bit R-2R DAC -> PKD (data pin 1)
-;    J4 pin 35           VIA_B PA4       PTT via 2N7000 -> PKS (data pin 3)
-;    J4 pin 33           VIA_B PA5       SQC in (optional, data pin 6)
+;    J3 pin 37/39/41/43  VIA_A PA3..PA0  4-bit R-2R DAC -> PKD (data pin 1)
+;    J3 pin 35           VIA_A PA4       PTT via 2N7000 -> PKS (data pin 3)
+;    J3 pin 33           VIA_A PA5       SQC in (optional, data pin 6)
+;    J3 pin 29           VIA_A PA7       comparator (RX audio)
+;    J3 pin 49 = +3V3, J3 pin 50 = GND
+;  (This FPGA image has VIA_A only; VIA_B and VIA_C are not there.)
 ;
 ;  Edit the CONFIG block below (your call, position, set cfg_ok to 1),
 ;  build with mk_tnc.bat and load:
-;    wdc_uploader_term.exe -d COM10 tnc.bin -m write -x -s 5 -t
+;    wdc_uploader_term.exe -d COM4 tnc.bin -m write -x -s 5 -t
 ;
 ;  LEDs: 0 = heartbeat while idle, 1 = TX (radio keyed),
 ;        2 = RX (channel busy: SQC if cfg_sqc is set, else audio on PA7).
@@ -28,9 +31,12 @@
 ;    One byte per bit: 0 = mark (1200 Hz), 1 = space (2200 Hz).
 ;  - The send loop then plays TONES: 19200 samples/s from a 64-step sine
 ;    table with a 16-bit phase accumulator (continuous phase), 16 samples
-;    per bit. No timers are used: every sample takes exactly 768 cycles
-;    at 14.7456 MHz, counted instruction by instruction (see tx_smp).
-;    If the clock were different, the 1 and 2 test tones would show it.
+;    per bit. VIA_A Timer 1 runs free at 192 cycles (PHI2 is 3.6864 MHz,
+;    measured with probes/clock.asm); each sample waits for its flag,
+;    so the rate does not depend on how long the code takes.
+;  - This VIA does not clear the T1 flag when T1C-L is read (a 65C22
+;    would); writing $40 to the IFR clears it. Idle, the same timer gives
+;    the 10 ms tick.
 ;***************************************************************************
 
         PW      132
@@ -44,8 +50,16 @@ GPIOB_DATA      EQU     $7F08           ; LEDs
 GPIOB_DDR       EQU     $7F09
 GPIOE_PIO       EQU     $7FA0
 GPIOE_DDR       EQU     $7FA1
-VIAB_DDRA       EQU     $7F33
-VIAB_ORA        EQU     $7F3F           ; port A, no handshake
+VIAA_DDRA       EQU     $7F23
+VIAA_ORA        EQU     $7F2F           ; port A, no handshake
+VIAA_T1CL       EQU     $7F24
+VIAA_T1CH       EQU     $7F25
+VIAA_T1LL       EQU     $7F26
+VIAA_T1LH       EQU     $7F27
+VIAA_ACR        EQU     $7F2B
+VIAA_IFR        EQU     $7F2D
+VIAA_IER        EQU     $7F2E
+T1_FLAG         EQU     $40
 
 PTT_BIT         EQU     $10             ; PA4
 SQC_BIT         EQU     $20             ; PA5
@@ -91,10 +105,11 @@ LASTRX          EQU     $5C             ; last PA7 level
 EDGES           EQU     $5D             ; PA7 changes in this tick
 SPTR            EQU     $5E             ; 2
 RXHANG          EQU     $60             ; ticks the RX LED stays on
+OUTV            EQU     $61             ; next DAC + PTT value
 
-; delay loop counts for 768 cycles a sample (see tx_smp)
-D_SAMPLE        EQU     143
-D_BIT           EQU     134
+; Timer 1 periods at PHI2 = 3.6864 MHz (continuous mode period = latch + 2)
+T1_SAMPLE       EQU     192-2           ; 19200 samples/s
+T1_TICK         EQU     36864-2         ; 100 ticks/s
 
 PRINT   MACRO   STR
         ldx     #<STR
@@ -163,11 +178,15 @@ START:
         lda     #$FF
         sta     GPIOB_DDR
         stz     GPIOB_DATA
-        jsr     radio_idle
-        lda     VIAB_DDRA
+        lda     #$7F
+        sta     VIAA_IER                ; no VIA interrupts
+        lda     #$40
+        sta     VIAA_ACR                ; T1 continuous, PB7 off
+        jsr     radio_idle              ; also starts the 10 ms tick
+        lda     VIAA_DDRA
         and     #$FF-OUT_MASK           ; PA5-PA7 inputs
         ora     #OUT_MASK               ; PA0-PA4 outputs
-        sta     VIAB_DDRA
+        sta     VIAA_DDRA
         stz     TICK
         stz     SECS
         stz     EDGES
@@ -286,7 +305,7 @@ rl_off: lda     #RX_LED
 
 ; A <> 0 (Z=0) if SQC says the channel is busy (cfg_sqc must be 1 or 2)
 sqc_busy:
-        lda     VIAB_ORA
+        lda     VIAA_ORA
         and     #SQC_BIT
         ldx     cfg_sqc
         cpx     #1
@@ -295,24 +314,21 @@ sqc_busy:
 sb_x:   cmp     #0
         rts
 
-; about 10 ms at 14.7456 MHz, counting PA7 edges into EDGES as it waits:
-; 34 x 256 x 17 cycles
+; wait for the next 10 ms Timer 1 tick, counting PA7 edges into EDGES
 tick_wait:
         stz     EDGES
-        ldx     #34
-tw_o:   ldy     #0
-tw_i:   lda     VIAB_ORA                ; 4
-        and     #RX_BIT                 ; 2
-        cmp     LASTRX                  ; 3
-        beq     tw_s                    ; 3 / 2
+tw_lp:  lda     VIAA_ORA
+        and     #RX_BIT
+        cmp     LASTRX
+        beq     tw_s
         sta     LASTRX
         inc     EDGES
         bne     tw_s
         dec     EDGES                   ; stop at 255
-tw_s:   dey                             ; 2
-        bne     tw_i                    ; 3
-        dex
-        bne     tw_o
+tw_s:   bit     VIAA_IFR                ; V = T1 flag
+        bvc     tw_lp
+        lda     #T1_FLAG
+        sta     VIAA_IFR                ; clear it
         rts
 
 k_period:
@@ -611,6 +627,15 @@ transmit:
         tsb     GPIOB_DATA              ; TX LED on while keyed
         stz     PH
         stz     PH+1
+        lda     #DAC_MID+PTT_BIT        ; first sample: mid-scale, keyed
+        sta     OUTV
+        lda     #<T1_SAMPLE             ; Timer 1: one flag per sample
+        sta     VIAA_T1LL
+        lda     #>T1_SAMPLE
+        sta     VIAA_T1LH
+        sta     VIAA_T1CH               ; load and start
+        lda     #T1_FLAG
+        sta     VIAA_IFR
 tx_restart:
         lda     #<TONES
         sta     TP
@@ -625,52 +650,47 @@ tx_restart:
         lda     inc_hi,x
         sta     INCH
 
-; One sample. Both paths store the DAC at the same point and take exactly
-; 768 cycles (14.7456 MHz / 19200). Cycle counts in the right column.
-tx_smp: clc                             ; 2
-        lda     PH                      ; 3
-        adc     INCL                    ; 3
-        sta     PH                      ; 3
-        lda     PH+1                    ; 3
-        adc     INCH                    ; 3
-        sta     PH+1                    ; 3
-        lsr     a                       ; 2
-        lsr     a                       ; 2   top 6 bits
-        tax                             ; 2
-        lda     sine,x                  ; 4   page aligned
-        ora     #PTT_BIT                ; 2
-        sta     VIAB_ORA                ; 4   DAC + PTT
-        dec     SCNT                    ; 5   = 41
-        beq     tx_bit                  ; 2 / 3 taken
-        ldy     #D_SAMPLE               ; 2
-tx_d1:  dey                             ; 5 x 143 - 1 = 714
-        bne     tx_d1
-        nop                             ; 2
-        nop                             ; 2
-        nop                             ; 2
-        bra     tx_smp                  ; 3   41+2+2+714+6+3 = 768
+; One sample per Timer 1 flag (192 cycles). The DAC is written right after
+; the flag, so the rate is exact; the work after it takes at most ~120 cycles.
+tx_smp: bit     VIAA_IFR                ; 4   V = T1 flag
+        bvc     tx_smp                  ; 2/3
+        lda     OUTV                    ; 3
+        sta     VIAA_ORA                ; 4   DAC + PTT
+        lda     #T1_FLAG                ; 2
+        sta     VIAA_IFR                ; 4   clear the flag
+        clc                             ;     next sample
+        lda     PH
+        adc     INCL
+        sta     PH
+        lda     PH+1
+        adc     INCH
+        sta     PH+1
+        lsr     a
+        lsr     a                       ;     top 6 bits
+        tax
+        lda     sine,x
+        ora     #PTT_BIT
+        sta     OUTV
+        dec     SCNT
+        bne     tx_smp
 
-tx_bit: lda     #16                     ; 2   (44 so far)
-        sta     SCNT                    ; 3
-        inc     TP                      ; 5
-        bne     tx_b1                   ; 3   (+4 once every 256 bits)
+        lda     #16                     ; next bit
+        sta     SCNT
+        inc     TP
+        bne     tx_b1
         inc     TP+1
-tx_b1:  lda     TP                      ; 3
-        cmp     TEND                    ; 3
-        lda     TP+1                    ; 3
-        sbc     TEND+1                  ; 3
-        bcs     tx_end                  ; 2
-        lda     (TP)                    ; 5
-        tax                             ; 2
-        lda     inc_lo,x                ; 4
-        sta     INCL                    ; 3
-        lda     inc_hi,x                ; 4
-        sta     INCH                    ; 3
-        ldy     #D_BIT                  ; 2   = 94
-tx_d2:  dey                             ; 5 x 134 - 1 = 669
-        bne     tx_d2
-        nop                             ; 2
-        bra     tx_smp                  ; 3   94+669+2+3 = 768
+tx_b1:  lda     TP
+        cmp     TEND
+        lda     TP+1
+        sbc     TEND+1
+        bcs     tx_end
+        lda     (TP)
+        tax
+        lda     inc_lo,x
+        sta     INCL
+        lda     inc_hi,x
+        sta     INCH
+        bra     tx_smp
 
 tx_end: lda     MODE
         beq     tx_off
@@ -681,14 +701,23 @@ tx_end: lda     MODE
         beq     tx_off
         jmp     tx_restart
 tx_key: lda     ACIA_DATA
-tx_off: jsr     radio_idle
+tx_off: bit     VIAA_IFR                ; let the last sample play out
+        bvc     tx_off
+        jsr     radio_idle
         lda     #TX_LED
         trb     GPIOB_DATA
         rts
 
 radio_idle:
         lda     #DAC_MID                ; PTT off, DAC mid-scale
-        sta     VIAB_ORA
+        sta     VIAA_ORA
+        lda     #<T1_TICK               ; Timer 1 back to the 10 ms tick
+        sta     VIAA_T1LL
+        lda     #>T1_TICK
+        sta     VIAA_T1LH
+        sta     VIAA_T1CH
+        lda     #T1_FLAG
+        sta     VIAA_IFR
         rts
 
 ;---------------------------------------------------------------------------

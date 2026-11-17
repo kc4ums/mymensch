@@ -5,4 +5,4 @@
 *.sym
 __pycache__/
 # personal notes
-aprs/wdc_email.txt
+wdc_email.txt

@@ -7,10 +7,11 @@ where $7FB0-$7FBF reads 00 and ignores writes.
 import os
 import sys
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools', 'emu'))
 from emu_mymensch import Board, load_s19
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-S19 = os.path.join(HERE, '..', 'probe', 'adcprobe.s19')
+S19 = os.path.join(HERE, '..', 'adcprobe.s19')
 ADC = 0x7FB0
 TEMP = 0x0E56
 

@@ -7,7 +7,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, '..', 'aprs', 'test'))
+sys.path.insert(0, os.path.join(HERE, '..', 'tools', 'emu'))
 import emu_mymensch  # noqa: E402
 from emu_mymensch import Board, load_s19  # noqa: E402
 

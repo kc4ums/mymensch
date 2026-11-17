@@ -61,7 +61,7 @@ The monitor's jump table sends each IRQ through a RAM vector. To use an interrup
 
 ## Testing without hardware
 
-`test_mmon.py` runs the monitor on the 65C02 emulator in `../aprs/test`. It types commands, hits a BRK and resumes, and pastes an S19 at the real 115200-baud character rate, checking that no characters are lost.
+`test_mmon.py` runs the monitor on the 65C02 emulator in `../tools/emu`. It types commands, hits a BRK and resumes, and pastes an S19 at the real 115200-baud character rate, checking that no characters are lost.
 
 ```
 python test_mmon.py        (add -v to see the session)

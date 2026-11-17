@@ -2,7 +2,7 @@
 
 The MyMENSCH builds APRS packets itself and sends them as 1200-baud audio to a Kenwood TM-V71A data port. There is no external TNC. Receive comes next.
 
-The wiring is in `../hardware/radio_interface.svg`. Transmit needs the R-2R DAC on J4 pins 37-43 (VIA_B PA3-PA0) and the PTT transistor on J4 pin 35 (PA4).
+The wiring is in `../hardware/radio_interface.svg`, and the board is in `../hardware/pcb/`. Transmit needs the R-2R DAC on **J3** pins 37-43 (VIA_A PA3-PA0) and the PTT transistor on J3 pin 35 (PA4). On J3, pin 49 is +3V3 and pin 50 is GND.
 
 ## Set up
 
@@ -15,7 +15,7 @@ The wiring is in `../hardware/radio_interface.svg`. Transmit needs the R-2R DAC 
 2. **Build and load:**
    ```
    mk_tnc.bat
-   wdc_uploader_term.exe -d COM10 tnc.bin -m write -x -s 5 -t
+   wdc_uploader_term.exe -d COM4 tnc.bin -m write -x -s 5 -t
    ```
 3. **Set up the radio:** put the DATA band on the band tuned to 144.390 MHz, and set the data speed to 1200.
 
@@ -41,7 +41,7 @@ To move them, change `HB_LED`, `TX_LED` and `RX_LED` in `tnc.asm`.
 
 ## First time on the air
 
-1. **Into a dummy load or on low power, press `1`.** Listen on a second receiver or HT: you should hear a clean 1200 Hz tone. A phone tuner app should read 1200 Hz. If it doesn't, the CPU clock isn't 14.7456 MHz; the delay counts `D_SAMPLE` / `D_BIT` assume it.
+1. **Into a dummy load or on low power, press `1`.** Listen on a second receiver or HT: you should hear a clean 1200 Hz tone. A phone tuner app should read 1200 Hz. If it doesn't, check `T1_SAMPLE` in `tnc.asm`: it assumes PHI2 = 3.6864 MHz, which `probes/clock.bin` measured on this board.
 2. **Set deviation with RV1.** Turn RV1 up until the tone is clearly audible, then back it off so the tone sounds clean, not distorted. With a deviation meter, aim for about 3 kHz.
 3. **Press `B`.** If your signal reaches an internet gateway (iGate), the packet appears on aprs.fi under your call within a minute.
 
@@ -56,10 +56,10 @@ Memory used: code at `$8000-$87FF`, frame buffer at `$0300`, tone buffer at `$08
 
 ## Testing without hardware
 
-`test_tnc.py` runs the program on the emulator in `../aprs/test`, extended to count 65C02 cycles. The test:
+`test_tnc.py` runs the program on the emulator in `../tools/emu`, extended to count 65C02 cycles. The test:
 
 1. Rebuilds the audio from the DAC writes.
-2. Checks every sample period is 768 cycles.
+2. Checks every sample period is 192 cycles, with Timer 1 modelled the way the board's VIA behaves.
 3. Demodulates the tones, undoes NRZI and bit stuffing, and checks the FCS.
 4. Compares the frame byte for byte with an independent Python AX.25 encoder.
 5. Measures the test tones.
@@ -70,6 +70,6 @@ python test_tnc.py        (add -v to see the console)
 
 ## Not yet confirmed on real hardware
 
-- **VIA_B port A:** it may not exist in this FPGA image. Run `aprs/probe/regmap.bin` to check. If it's missing, only the pin addresses in `tnc.asm` change.
+- **VIA_A port A outputs:** the VIA_A registers and Timer 1 work (`regmap`, `clock` probes), but the port pins haven't been measured with a meter yet.
 - **Timing:** the instruction timing is assumed identical to a W65C02S. Test tone `1` confirms it.
 - **SQC:** its polarity on the TM-V71A hasn't been checked. `cfg_sqc` is `0` (ignore SQC) until it's measured.

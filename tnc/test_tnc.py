@@ -1,8 +1,10 @@
 """Run tnc.s19 on the MyMENSCH emulator and check the transmitted audio.
 
-The emulator is extended with 65C02 cycle counting, so every DAC write
-gets a time stamp in CPU cycles. The test then
-  - checks the sample period is 768 cycles (19200 samples/s at 14.7456 MHz),
+The emulator is extended with 65C02 cycle counting and a VIA_A Timer 1
+that behaves like the board's (measured with probes/clock.asm: the T1
+flag clears only when $40 is written to the IFR). Every DAC write gets a
+time stamp in CPU cycles. The test then
+  - checks the sample period is 192 cycles (19200 samples/s at 3.6864 MHz),
   - demodulates the audio with a Goertzel-style tone detector,
   - undoes NRZI and bit stuffing, checks the AX.25 FCS,
   - compares the frame byte for byte with one built here in Python,
@@ -17,15 +19,17 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, '..', 'aprs', 'test'))
+sys.path.insert(0, os.path.join(HERE, '..', 'tools', 'emu'))
 from emu_mymensch import Board, load_s19, Halt  # noqa: E402
 
 S19 = os.path.join(HERE, 'tnc.s19')
 LST = os.path.join(HERE, 'tnc.lst')
-CLK = 14_745_600
+CLK = 3_686_400
 FS = 19_200
 SPB = 16
-ORA = 0x7F3F
+ORA = 0x7F2F
+VIA = 0x7F20
+SAMPLE = 192
 PTT = 0x10
 
 # 65C02 base cycle counts for every opcode the program uses in timed code,
@@ -41,7 +45,7 @@ CYC = {
     0x0A: 2, 0x46: 5, 0x66: 5, 0x05: 3, 0x45: 3, 0x92: 5, 0x86: 3, 0x84: 3,
     0xB1: 5, 0x91: 6, 0xA6: 3, 0xA4: 3, 0xE4: 3, 0xC4: 3, 0x7C: 6, 0x6C: 6,
     0x0C: 6, 0x1C: 6, 0xDD: 4, 0xE9: 2, 0x69: 2,
-    0x78: 2, 0x9A: 2, 0x9C: 4, 0xAE: 4, 0xD8: 2,
+    0x78: 2, 0x9A: 2, 0x9C: 4, 0xAE: 4, 0xD8: 2, 0x2C: 4, 0x50: 2,
     0x00: 7,    # the emulator's reset stub, reached by ESC
 }
 BRANCH = {0x10, 0x30, 0x50, 0x70, 0x90, 0xB0, 0xD0, 0xF0, 0x80}
@@ -71,20 +75,58 @@ class TncBoard(Board):
         self.cpu.io_wr[ORA] = lambda a, v: self.dac.append((self.cyc, v))
         self.cpu.io_rd[ORA] = self._ora_rd  # SQC idle; PA7 = test audio
         self.ready_at = None
+        # VIA_A Timer 1, continuous mode, period = latch + 2
+        self.t1_latch = 0
+        self.t1_next = None
+        self.t1_period = None
+        self.t1_flag = False
+        self.cpu.io_wr[VIA + 4] = self._t1ll_wr
+        self.cpu.io_wr[VIA + 6] = self._t1ll_wr
+        self.cpu.io_wr[VIA + 7] = self._t1lh_wr
+        self.cpu.io_wr[VIA + 5] = self._t1ch_wr
+        self.cpu.io_rd[VIA + 13] = self._ifr_rd
+        self.cpu.io_wr[VIA + 13] = self._ifr_wr
         self.leds = 0
         self.led_log = []                   # LED register values written
         self.cpu.io_rd[0x7F08] = lambda a: self.leds
         self.cpu.io_wr[0x7F08] = self._led_wr
 
+    def _t1ll_wr(self, a, v):
+        self.t1_latch = (self.t1_latch & 0xFF00) | v
+
+    def _t1lh_wr(self, a, v):
+        self.t1_latch = (self.t1_latch & 0xFF) | (v << 8)
+
+    def _t1ch_wr(self, a, v):
+        self._t1lh_wr(a, v)
+        self.t1_period = self.t1_latch + 2
+        self.t1_next = self.cyc + self.t1_period
+        self.t1_flag = False
+
+    def _t1_update(self):
+        if self.t1_next is not None and self.cyc >= self.t1_next:
+            self.t1_flag = True
+            while self.t1_next <= self.cyc:
+                self.t1_next += self.t1_period
+
+    def _ifr_rd(self, a):
+        self._t1_update()
+        return 0xC0 if self.t1_flag else 0      # reading T1C-L does not clear it
+
+    def _ifr_wr(self, a, v):
+        self._t1_update()
+        if v & 0x40:
+            self.t1_flag = False
+
     def _led_wr(self, a, v):
         self.leds = v
         self.led_log.append(v)
 
-    RX_AUDIO_UNTIL = 1_500_000          # cycles of 1200 Hz on PA7 (~100 ms)
+    RX_AUDIO_UNTIL = 400_000            # cycles of 1200 Hz on PA7 (~110 ms)
 
     def _ora_rd(self, a):
         if self.cyc < self.RX_AUDIO_UNTIL:
-            return ((self.cyc // 6144) & 1) << 7     # 1200 Hz square wave
+            return ((self.cyc // 1536) & 1) << 7     # 1200 Hz square wave
         return 0
 
     # console: type the next line once the wanted text has been printed
@@ -224,7 +266,7 @@ def main():
         ('stops ... ', 'x'),
         ('done\r\n', '2'),
         ('stops ... ', 'x'),
-        ('done\r\n', '\x1b', 40 * 147_968),     # 40 idle ticks first
+        ('done\r\n', '\x1b', 40 * 36_864),     # 40 idle ticks first
     ]
     b = TncBoard(img, script)
     m = b.cpu.mem
@@ -272,12 +314,13 @@ def main():
     # timing
     for name, burst in zip(('beacon', 'tone1', 'tone2'), bs):
         d = [burst[i + 1][0] - burst[i][0] for i in range(len(burst) - 1)]
-        n768 = sum(1 for x in d if x == 768)
-        odd = sorted(set(x for x in d if x != 768))
+        nexact = sum(1 for x in d if x == SAMPLE)
+        spread = (min(d), max(d))
         mean = sum(d) / len(d)
-        check(abs(mean - 768) / 768 < 0.0005 and n768 / len(d) > 0.99,
-              '%s: %d samples, period mean %.3f cycles (%.2f samples/s), %.2f%% exactly 768, other %s'
-              % (name, len(burst), mean, CLK / mean, 100 * n768 / len(d), odd[:4]))
+        check(abs(mean - SAMPLE) / SAMPLE < 0.0005 and spread[1] - spread[0] <= 8,
+              '%s: %d samples, period mean %.3f cycles (%.2f samples/s), %.1f%% exactly %d, '
+              'range %d-%d' % (name, len(burst), mean, CLK / mean, 100 * nexact / len(d),
+                               SAMPLE, *spread))
 
     # beacon contents
     lead, frame = deframe(tones([v for _, v in bs[0]]))
@@ -292,9 +335,10 @@ def main():
     # test tones: count zero crossings
     for f, burst in zip((1200, 2200), bs[1:]):
         v = [s for _, s in burst]
-        ups = sum(1 for i in range(1, len(v)) if v[i - 1] < 8 <= v[i])
-        secs = (burst[-1][0] - burst[0][0]) / CLK
-        check(abs(ups / secs - f) < f * 0.003, 'test tone %d Hz measured %.1f Hz' % (f, ups / secs))
+        t = [c for c, _ in burst]
+        ups = [t[i] for i in range(1, len(v)) if v[i - 1] < 8 <= v[i]]
+        hz = (len(ups) - 1) * CLK / (ups[-1] - ups[0])     # first to last crossing
+        check(abs(hz - f) < f * 0.003, 'test tone %d Hz measured %.1f Hz' % (f, hz))
 
     print('ALL PASSED' if ok else 'FAILED')
     return 0 if ok else 1

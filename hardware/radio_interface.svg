@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1150" viewBox="0 0 1240 1150" font-family="Helvetica, Arial, sans-serif">
 <rect width="100%" height="100%" fill="white"/>
 <text x="620" y="34" font-size="20" text-anchor="middle" fill="#1a1a1a" font-weight="bold">MyMENSCH Rev-C software TNC - Kenwood TM-V71A data port interface (1200 baud AFSK)</text>
-<text x="620" y="56" font-size="13" text-anchor="middle" fill="#555" font-weight="normal" font-style="italic">Rev 0.1 draft - J4 pin choices are provisional until regmap.bin confirms VIA_B port A</text>
+<text x="620" y="56" font-size="13" text-anchor="middle" fill="#555" font-weight="normal" font-style="italic">Rev 0.2 - MyMENSCH J3, VIA_A port A (this FPGA image has no VIA_B or VIA_C)</text>
 <rect x="40" y="90" width="170" height="840" rx="8" fill="#f6f6f6" stroke="#1a1a1a" stroke-width="2"/>
 <text x="125" y="118" font-size="15" text-anchor="middle" fill="#1a1a1a" font-weight="bold">KENWOOD TM-V71A</text>
 <text x="125" y="136" font-size="11" text-anchor="middle" fill="#555" font-weight="normal">DATA jack, 6-pin mini-DIN (rear)</text>
 <rect x="1010" y="90" width="200" height="840" rx="8" fill="#f6f6f6" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1110" y="118" font-size="16" text-anchor="middle" fill="#1a1a1a" font-weight="bold">MyMENSCH J4</text>
+<text x="1110" y="118" font-size="16" text-anchor="middle" fill="#1a1a1a" font-weight="bold">MyMENSCH J3</text>
 <text x="1110" y="136" font-size="11" text-anchor="middle" fill="#555" font-weight="normal">3.3 V logic only</text>
 <text x="240" y="150" font-size="13" text-anchor="start" fill="#0b5cad" font-weight="bold">RECEIVE  -  audio to logic level (comparator with hysteresis)</text>
 <text x="240" y="448" font-size="13" text-anchor="start" fill="#0b5cad" font-weight="bold">TRANSMIT  -  4-bit R-2R DAC, low-pass, level set</text>
@@ -46,7 +46,7 @@
 <text x="800" y="177" font-size="12" text-anchor="middle" fill="#0b5cad" font-weight="bold">+3V3</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="800,240 1010,240"/>
 <circle cx="1010" cy="240" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="244" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">29  VIA_B_PA7  RX in</text>
+<text x="1020" y="244" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">29  VIA_A_PA7  RX in</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="450,215 450,267.5 456,270 444,275 456,280 444,285 456,290 444,295 450,297.5 450,350"/>
 <text x="438" y="286.5" font-size="12" text-anchor="end" fill="#1a1a1a" font-weight="normal">R2 100k</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="560,265 530,265 530,350"/>
@@ -79,22 +79,22 @@
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="402,414 418,414"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="406,418 414,418"/>
 <circle cx="1010" cy="490" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="494" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">37  VIA_B_PA3  DAC b3</text>
+<text x="1020" y="494" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">37  VIA_A_PA3  DAC b3</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,490 925,490 927.5,496 932.5,484 937.5,496 942.5,484 947.5,496 952.5,484 955,490 1010,490"/>
 <text x="940" y="478" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R10 20k</text>
 <circle cx="870" cy="490" r="3.5" fill="#1a1a1a"/>
 <circle cx="1010" cy="540" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="544" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">39  VIA_B_PA2  DAC b2</text>
+<text x="1020" y="544" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">39  VIA_A_PA2  DAC b2</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,540 925,540 927.5,546 932.5,534 937.5,546 942.5,534 947.5,546 952.5,534 955,540 1010,540"/>
 <text x="940" y="528" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R11 20k</text>
 <circle cx="870" cy="540" r="3.5" fill="#1a1a1a"/>
 <circle cx="1010" cy="590" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="594" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">41  VIA_B_PA1  DAC b1</text>
+<text x="1020" y="594" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">41  VIA_A_PA1  DAC b1</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,590 925,590 927.5,596 932.5,584 937.5,596 942.5,584 947.5,596 952.5,584 955,590 1010,590"/>
 <text x="940" y="578" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R12 20k</text>
 <circle cx="870" cy="590" r="3.5" fill="#1a1a1a"/>
 <circle cx="1010" cy="640" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="644" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">43  VIA_B_PA0  DAC b0</text>
+<text x="1020" y="644" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">43  VIA_A_PA0  DAC b0</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="870,640 925,640 927.5,646 932.5,634 937.5,646 942.5,634 947.5,646 952.5,634 955,640 1010,640"/>
 <text x="940" y="628" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R13 20k</text>
 <circle cx="870" cy="640" r="3.5" fill="#1a1a1a"/>
@@ -156,7 +156,7 @@
 <circle cx="210" cy="640" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
 <text x="200" y="644" font-size="13" text-anchor="end" fill="#1a1a1a" font-weight="bold">4  PR9  n/c</text>
 <circle cx="1010" cy="780" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="784" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">35  VIA_B_PA4  PTT</text>
+<text x="1020" y="784" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">35  VIA_A_PA4  PTT</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="900,780 940,780 942.5,786 947.5,774 952.5,786 957.5,774 962.5,786 967.5,774 970,780 1010,780"/>
 <text x="955" y="768" font-size="12" text-anchor="middle" fill="#1a1a1a" font-weight="normal">R8 100Ω</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="900,780 840,780"/>
@@ -189,14 +189,14 @@
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="292,854 308,854"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="296,858 304,858"/>
 <circle cx="1010" cy="850" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="854" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">49  VSS (GND)</text>
+<text x="1020" y="854" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">50  VSS (GND)</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="1010,850 960,850"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="960,850 960,860"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="948,860 972,860"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="952,864 968,864"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="956,868 964,868"/>
 <circle cx="1010" cy="170" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="174" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">50  VDD  +3V3 out</text>
+<text x="1020" y="174" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">49  VDD  +3V3 out</text>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="1010,170 960,170"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="960,170 960,162"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="951,162 969,162"/>
@@ -217,7 +217,7 @@
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="696,968 704,968"/>
 <polyline fill="none" stroke="#1a1a1a" stroke-width="2" points="700,890 1010,890"/>
 <circle cx="1010" cy="890" r="3" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1020" y="894" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">33  VIA_B_PA5  SQC in</text>
+<text x="1020" y="894" font-size="13" text-anchor="start" fill="#1a1a1a" font-weight="bold">33  VIA_A_PA5  SQC in</text>
 <rect x="40" y="990" width="1160" height="146" rx="8" fill="#fbfbf4" stroke="#bbb"/>
 <text x="56" y="1012" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• Parts: U1 LM393 (one half used; tie unused inputs +3V3/GND), Q1 2N7000, RV1 10k trimpot, resistors 1/4 W 5% (20k = two 10k in series is fine).</text>
 <text x="56" y="1030" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• RX: PR1 is fixed-level 1200-baud audio (about 500 mVpp), not affected by the volume knob. C1/R1 put it on VREF; R3 adds ~30 mV hysteresis.</text>
@@ -225,5 +225,5 @@
 <text x="56" y="1066" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• PTT: grounding PKS transmits. VIA pins are inputs after reset, so R9 holds Q1 off. Firmware also limits key-down time. SQC tells firmware the channel is busy.</text>
 <text x="56" y="1084" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• Radio menu: set the DATA band to the band tuned to 144.390 MHz and data speed to 1200. Pin numbers per the TM-V71A manual - check which side the view is from.</text>
 <text x="56" y="1102" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• A ready-made 6-pin mini-DIN cable avoids soldering the plug (some PS/2 cables have all 6 wires - check with a meter).</text>
-<text x="56" y="1120" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• All grounds common: radio GND to J4 pin 49. Nothing on J4 may see more than 3.3 V.</text>
+<text x="56" y="1120" font-size="12" text-anchor="start" fill="#333" font-weight="normal">• All grounds common: radio GND to J3 pin 50 (J3: pin 49 = +3V3, pin 50 = GND). Nothing on J3 may see more than 3.3 V.</text>
 </svg>

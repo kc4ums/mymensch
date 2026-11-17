@@ -95,7 +95,7 @@ def pin_l(x, y, label):          # pin on the right edge of the radio box
     text(x - 10, y + 4, label, 13, 'end', weight='bold')
 
 
-def pin_r(x, y, num, label):     # pin on the left edge of the J4 box
+def pin_r(x, y, num, label):     # pin on the left edge of the J3 box
     add('<circle cx="%g" cy="%g" r="3" fill="white" stroke="%s" stroke-width="2"/>' % (x, y, INK))
     text(x + 10, y + 4, '%s  %s' % (num, label), 13, weight='bold')
 
@@ -106,7 +106,7 @@ add('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0
 add('<rect width="100%" height="100%" fill="white"/>')
 text(W / 2, 34, 'MyMENSCH Rev-C software TNC - Kenwood TM-V71A data port interface (1200 baud AFSK)', 20,
      'middle', weight='bold')
-text(W / 2, 56, 'Rev 0.1 draft - J4 pin choices are provisional until regmap.bin confirms VIA_B port A',
+text(W / 2, 56, 'Rev 0.2 - MyMENSCH J3, VIA_A port A (this FPGA image has no VIA_B or VIA_C)',
      13, 'middle', NOTE, italic=True)
 
 # radio box
@@ -114,10 +114,10 @@ RX0 = 210
 add('<rect x="40" y="90" width="%d" height="840" rx="8" fill="#f6f6f6" stroke="%s" stroke-width="2"/>' % (RX0 - 40, INK))
 text(125, 118, 'KENWOOD TM-V71A', 15, 'middle', weight='bold')
 text(125, 136, 'DATA jack, 6-pin mini-DIN (rear)', 11, 'middle', NOTE)
-# J4 box
+# J3 box
 JX = 1010
 add('<rect x="%d" y="90" width="200" height="840" rx="8" fill="#f6f6f6" stroke="%s" stroke-width="2"/>' % (JX, INK))
-text(JX + 100, 118, 'MyMENSCH J4', 16, 'middle', weight='bold')
+text(JX + 100, 118, 'MyMENSCH J3', 16, 'middle', weight='bold')
 text(JX + 100, 136, '3.3 V logic only', 11, 'middle', NOTE)
 
 # section labels
@@ -151,7 +151,7 @@ NB = 720
 wire((720, 180), (NB, 240))
 wire((660, 240), (NB, 240))
 dot(NB, 240)
-# pull-up and output to J4
+# pull-up and output to J3
 NC = 800
 wire((NB, 240), (NC, 240))
 dot(NC, 240)
@@ -159,7 +159,7 @@ res_v(NC, 240, 190, 'R6', '10k')   # drawn upward
 vcc(NC, 190)
 YRX = 240
 wire((NC, YRX), (JX, YRX))
-pin_r(JX, YRX, '29', 'VIA_B_PA7  RX in')
+pin_r(JX, YRX, '29', 'VIA_A_PA7  RX in')
 # bias: R2 from node A down to VREF
 YV = 350
 res_v(NA, YA, YV, 'R2', '100k', left=True)
@@ -181,8 +181,8 @@ gnd(410, 400)
 # ---------------------------------------------------------------- transmit
 SP = 870                  # R-2R spine
 ys = [490, 540, 590, 640]  # PA3 (MSB) .. PA0 (LSB)
-pins = [('37', 'VIA_B_PA3  DAC b3'), ('39', 'VIA_B_PA2  DAC b2'),
-        ('41', 'VIA_B_PA1  DAC b1'), ('43', 'VIA_B_PA0  DAC b0')]
+pins = [('37', 'VIA_A_PA3  DAC b3'), ('39', 'VIA_A_PA2  DAC b2'),
+        ('41', 'VIA_A_PA1  DAC b1'), ('43', 'VIA_A_PA0  DAC b0')]
 for i, (y, (num, lab)) in enumerate(zip(ys, pins)):
     pin_r(JX, y, num, lab)
     res_h(SP, JX, y, 'R%d' % (10 + i), '20k', above=True)
@@ -221,7 +221,7 @@ pin_l(RX0, 640, '4  PR9  n/c')
 
 # ---------------------------------------------------------------- PTT
 YP = 780
-pin_r(JX, YP, '35', 'VIA_B_PA4  PTT')
+pin_r(JX, YP, '35', 'VIA_A_PA4  PTT')
 res_h(900, JX, YP, 'R8', '100Ω', above=True)
 NG = 840
 wire((900, YP), (NG, YP))
@@ -246,10 +246,10 @@ YG = 840
 pin_l(RX0, YG, '2  GND')
 wire((RX0, YG), (300, YG))
 gnd(300, YG)
-pin_r(JX, 850, '49', 'VSS (GND)')
+pin_r(JX, 850, '50', 'VSS (GND)')
 wire((JX, 850), (960, 850))
 gnd(960, 850)
-pin_r(JX, 170, '50', 'VDD  +3V3 out')
+pin_r(JX, 170, '49', 'VDD  +3V3 out')
 wire((JX, 170), (960, 170))
 vcc(960, 170)
 
@@ -264,7 +264,7 @@ dot(700, YS)
 res_v(700, YS, 950, 'R21', '20k')
 gnd(700, 950)
 wire((700, YS), (JX, YS))
-pin_r(JX, YS, '33', 'VIA_B_PA5  SQC in')
+pin_r(JX, YS, '33', 'VIA_A_PA5  SQC in')
 
 # ---------------------------------------------------------------- notes
 NY = 990
@@ -276,7 +276,7 @@ notes = [
     'PTT: grounding PKS transmits. VIA pins are inputs after reset, so R9 holds Q1 off. Firmware also limits key-down time. SQC tells firmware the channel is busy.',
     'Radio menu: set the DATA band to the band tuned to 144.390 MHz and data speed to 1200. Pin numbers per the TM-V71A manual - check which side the view is from.',
     'A ready-made 6-pin mini-DIN cable avoids soldering the plug (some PS/2 cables have all 6 wires - check with a meter).',
-    'All grounds common: radio GND to J4 pin 49. Nothing on J4 may see more than 3.3 V.',
+    'All grounds common: radio GND to J3 pin 50 (J3: pin 49 = +3V3, pin 50 = GND). Nothing on J3 may see more than 3.3 V.',
 ]
 for i, n in enumerate(notes):
     text(56, NY + 22 + i * 18, '• ' + n, 12, color='#333')

@@ -3,7 +3,7 @@
 ;  TITLE:  Debug dump helpers for the MyMENSCH (65C02), output on ACIA_A
 ;
 ;  Include inside your CODE section:      INCLUDE 'dbg.inc'
-;  (from aprs/probe/ use:                 INCLUDE '..\dbg.inc')
+;  (from a folder next to lib/ use:       INCLUDE '..\lib\dbg.inc')
 ;
 ;  Every call keeps A, X, Y, the flags (incl. D and I) and zero page.
 ;  Each uses at most 9 bytes of stack.

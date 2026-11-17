@@ -83,7 +83,7 @@ idle:   lda     ACIA_A_STAT
         bra     run
 reboot: jmp     ($FFFC)
 
-        INCLUDE '..\dbg.inc'
+        INCLUDE '..\lib\dbg.inc'
 
         ENDS
         END

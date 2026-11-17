@@ -6,10 +6,11 @@ output and that A, X, Y and the flags survive each call.
 import os
 import sys
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools', 'emu'))
 from emu_mymensch import Board, load_s19
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-S19 = os.path.join(HERE, '..', 'probe', 'dbgdemo.s19')
+S19 = os.path.join(HERE, '..', 'dbgdemo.s19')
 
 
 def main():
