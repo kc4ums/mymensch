@@ -50,9 +50,14 @@ To move them, change `HB_LED`, `TX_LED` and `RX_LED` in `tnc.asm`.
 - **Packet building:** the packet is built as an AX.25 UI frame: addresses, control `03`, PID `F0`, APRS position text and CRC-16 FCS.
 - **Encoding:** the frame is then encoded one bit per byte into a buffer at `$0800-$17FF`. The buffer holds the TXDELAY flags, the frame (with bit stuffing), the FCS and 3 tail flags, all NRZI-encoded.
 - **Audio:** the send loop plays the buffer at 19200 samples/s, stepping a 64-step sine table with a 16-bit phase accumulator, so phase stays continuous across tone changes.
-- **Timing:** there are no timers. Every sample is exactly 768 CPU cycles, counted instruction by instruction in `tx_smp`.
+- **Timing:** VIA_A Timer 1 runs free with a 192-cycle period (19200/s at PHI2 = 3.6864 MHz). `tx_smp` waits for the Timer 1 flag, writes the DAC straight away, clears the flag by writing `$40` to the IFR, then works out the next sample. The sample rate is therefore exact no matter which path the code takes. This VIA does not clear the flag when T1C-L is read, as a 65C22 would.
+- **Idle tick:** between transmissions the same timer runs at 36,864 cycles, giving the 10 ms tick behind the heartbeat, the RX LED and the beacon timer.
 
-Memory used: code at `$8000-$87FF`, frame buffer at `$0300`, tone buffer at `$0800-$17FF`, and zero page `$40-$5F`.
+Memory used:
+- code at `$8000-$882F`
+- frame buffer at `$0300`
+- tone buffer at `$0800-$17FF`
+- zero page `$40-$61`
 
 ## Testing without hardware
 
@@ -71,5 +76,5 @@ python test_tnc.py        (add -v to see the console)
 ## Not yet confirmed on real hardware
 
 - **VIA_A port A outputs:** the VIA_A registers and Timer 1 work (`regmap`, `clock` probes), but the port pins haven't been measured with a meter yet.
-- **Timing:** the instruction timing is assumed identical to a W65C02S. Test tone `1` confirms it.
+- **Tone frequency on air:** the clock (3.6864 MHz) and Timer 1 were measured with `probes/clock.bin`. Test tone `1` reading 1200 Hz confirms it end to end.
 - **SQC:** its polarity on the TM-V71A hasn't been checked. `cfg_sqc` is `0` (ignore SQC) until it's measured.
