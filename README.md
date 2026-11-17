@@ -16,6 +16,7 @@ A software TNC for WDC's MyMENSCH Rev-C board and a Kenwood TM-V71A. The MyMENSC
 | Folder | Contents |
 |---|---|
 | `tnc/` | The software TNC (transmit side). `tnc/aprs_decode/` holds the APRS decoder from the old PK-232 receiver, for the receive work. |
+| `tnc134/` | The same software TNC ported to WDC's W65C134SXB: Port 5 I/O, the ROM monitor's console, 5 V. |
 | `hardware/` | Radio interface schematic (`radio_interface.svg`), plus `pcb/`: the CNC-milled board's GRBL G-code, drawings and generator. |
 | `monitor/` | MMON, a machine-language monitor: dump and edit memory and I/O, load S19 files, run code, catch BRKs. |
 | `probes/` | Small programs that test the board's hardware, and what they found. |
@@ -62,6 +63,7 @@ Every program has an emulator test; none needs the board:
 
 ```
 python tnc/test_tnc.py
+python tnc134/test_tnc134.py
 python tnc/aprs_decode/run_tests.py
 python monitor/test_mmon.py
 python probes/test/test_regmap.py      (also test_probe, test_adcprobe, test_dbgdemo)
