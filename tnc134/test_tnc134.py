@@ -30,15 +30,25 @@ RD_CHAR, OUTCH, MON_START = 0xF006, 0xF00F, 0xF039
 TICK = 36_864
 
 CYC = dict(CYC)
-CYC.update({0x24: 3, 0x04: 5, 0x14: 5, 0x58: 2})   # bit zp, tsb zp, trb zp, cli
+CYC.update({0x24: 3, 0x04: 5, 0x14: 5, 0x58: 2,    # bit zp, tsb zp, trb zp, cli
+            0x10: 2, 0x9E: 5})                     # bpl, stz abs,x
 
 
 def labels():
-    out = {}
+    out, pending = {}, []
     for line in open(LST, encoding='latin-1'):
         m = re.match(r'\s*\d+\s+00:([0-9A-F]{4}):[0-9A-F ]*?\s([a-z_][a-z0-9_]*):', line)
         if m:
             out[m.group(2)] = int(m.group(1), 16)
+        a = re.match(r'\s*\d+\s+00:([0-9A-F]{4}):', line)
+        if a:                                   # a label alone on its line takes the next address
+            for p in pending:
+                out[p] = int(a.group(1), 16)
+            pending = []
+        else:
+            m = re.match(r'\s*\d+\s+([a-z_][a-z0-9_]*):\s*$', line)
+            if m:
+                pending.append(m.group(1))
     return out
 
 
@@ -57,7 +67,7 @@ class SXB134:
         self.ready_at = None
         self.cyc = 0
         self.dac = []
-        self.leds = 0
+        self.leds = 0xFF                        # ROM leaves PD3 = $FF (all dark)
         self.led_log = []
         self.unknown = set()
         self.t1_latch = 0
@@ -190,7 +200,9 @@ def main():
     img = load_s19(S19)
     lat, lon = '3500.00N', '08500.00W'
     script = [
-        ('help\r\n', 'S'),
+        ('help\r\n', 'T'),
+        ('not transmitted\r\n', 'T'),
+        ('test mode off\r\n', 'S'),
         ('min\r\n', 'B'),
         ('done\r\n', '1'),
         ('stops ... ', 'x', 300_000),
@@ -227,12 +239,12 @@ def main():
     check('periodic beacon on, every %d min, next in 1 min' % bmin in out, 'status line')
     check('TX ' + text in out, 'console shows ' + text)
     check(not b.unknown, 'cycle table covers every opcode (%s)' % sorted(map(hex, b.unknown)))
-    hb = [v & 1 for v in b.led_log]
+    hb = [1 - (v & 1) for v in b.led_log]          # LEDs light on a 0
     flips = sum(1 for i in range(1, len(hb)) if hb[i] != hb[i - 1])
     check(1 in hb and flips >= 2, 'heartbeat LED (P30) blinks while idle (%d changes)' % flips)
-    tx = [bool(v & 2) for v in b.led_log]
+    tx = [not v & 2 for v in b.led_log]
     check(any(tx) and not tx[-1], 'TX LED (P31) on while keyed, off after')
-    rx = [bool(v & 4) for v in b.led_log]
+    rx = [not v & 4 for v in b.led_log]
     check(any(rx) and not rx[-1], 'RX LED (P32) on with audio on P57, off after the hang time')
 
     bs = bursts(b.dac)
@@ -260,8 +272,73 @@ def main():
         ups = [t[i] for i in range(1, len(v)) if v[i - 1] < 8 <= v[i]]
         hz = (len(ups) - 1) * CLK / (ups[-1] - ups[0])
         check(abs(hz - f) < f * 0.003, 'test tone %d Hz measured %.1f Hz' % (f, hz))
+    check('test mode on: simulated South GA stations' in out and 'test mode off' in out,
+          'T turns test mode on and off')
+    ok &= test_sim(lab, check)
     print('ALL PASSED' if ok else 'FAILED')
     return 0 if ok else 1
+
+
+def test_sim(lab, check):
+    """Call the test-mode routines directly and decode what they print."""
+    sys.path.insert(0, os.path.join(HERE, '..', 'tools', 'aprsmap'))
+    import aprsmap
+    b = SXB134(load_s19(S19), [])
+    cpu, m = b.cpu, b.cpu.mem
+    ret = 0xFFF0
+    good = True
+
+    def chk(cond, msg):
+        nonlocal good
+        check(cond, msg)
+        good &= bool(cond)
+
+    def back(c):
+        raise Halt('ret')
+    cpu.hooks[ret] = back
+
+    def call(name):
+        cpu.push16(ret - 1)
+        cpu.pc = lab[name]
+        try:
+            for _ in range(200_000):
+                if cpu.pc in cpu.hooks:
+                    cpu.hooks[cpu.pc](cpu)
+                else:
+                    cpu.step()
+        except Halt:
+            return
+        raise RuntimeError(name + ' did not return')
+
+    m[0xD2] = 1                                     # SIMON
+    call('sim_reset')
+    m[lab['cfg_simg']] = 3
+    cpu.out = bytearray()
+    call('sim_tick')                                # SIMT = 1: prints now
+    first = len(cpu.out)
+    call('sim_tick')
+    call('sim_tick')
+    quiet = len(cpu.out) == first
+    call('sim_tick')                                # 3 s later: the next one
+    chk(first > 0 and quiet and len(cpu.out) > first, 'test mode: a packet every cfg_simg = 3 s')
+    cpu.out = bytearray()
+    for _ in range(20 * 16):                        # 16 rounds: the mobiles drive their routes
+        call('sim_one')
+    lines = cpu.out.decode('latin-1').split('\r\n')[:-1]
+    dec = [aprsmap.decode(x) for x in lines]
+    chk(len(lines) == 320 and all(dec), 'test mode: 320 packets printed, every one decodes (%d)' % len(lines))
+    calls = {d['call'] for d in dec if d}
+    placed = [d for d in dec if d and d['lat'] is not None]
+    chk(len(calls) == 20, 'test mode: 20 stations and objects: %s' % ' '.join(sorted(calls)))
+    chk(all(30.5 < d['lat'] < 32.2 and -85.2 < d['lon'] < -82.0 for d in placed),
+        'test mode: every position is in South Georgia (%d positions)' % len(placed))
+    car = [(d['lat'], d['lon']) for d in dec if d and d['call'] == 'SIM11-9']
+    truck = [(d['lat'], d['lon']) for d in dec if d and d['call'] == 'SIM12-14']
+    chk(len(set(car)) == 9 and len(set(truck)) == 9 and len(car) == 16,
+        'test mode: car (I-75, Mic-E) and truck (US-82, compressed) drive 9 stops out and back')
+    chk(any(d and d['kind'] == 'msg' for d in dec) and any(d and d['kind'] == 'status' for d in dec),
+        'test mode: a message and a status are in the mix')
+    return good
 
 
 if __name__ == '__main__':

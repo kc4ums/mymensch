@@ -10,23 +10,39 @@ A software TNC for WDC's MyMENSCH Rev-C board and a Kenwood TM-V71A. The MyMENSC
 | Radio interface: schematic and milled PCB (`hardware/`) | Done. The layout passes its clearance and connectivity checks. **Not yet cut.** |
 | Receive: demodulate 1200-baud audio, decode packets | Next. The APRS decoder is ready in `tnc/aprs_decode/`. |
 | Board hardware facts | Measured; see below. |
+| W65C134SXB port (`tnc134/`) | **Runs on a real SXB**, loaded with `tools/sxb134`. It has a test mode (`T`) that prints 20 simulated South Georgia stations. Not yet on air. |
+| Uploader (`tools/sxb134/`) | **Works on a real SXB** for loading RAM. Flash writing has been tested only on the emulator; the chip's ID was read on the board. |
+| Text map (`tools/aprsmap/`) | **Works with the real SXB** in `tnc134`'s test mode. It can load the TNC itself (`--load`) and has a command line for TNC keys. |
+| AMTOR station (`amtor/`) | Written for the W65C134SXB with a PS/2 keyboard, an LCD and a TS-480. Emulator only; its full test still has to be rerun. |
 
 ## Folders
 
 | Folder | Contents |
 |---|---|
 | `tnc/` | The software TNC (transmit side). `tnc/aprs_decode/` holds the APRS decoder from the old PK-232 receiver, for the receive work. |
-| `tnc134/` | The same software TNC ported to WDC's W65C134SXB: Port 5 I/O, the ROM monitor's console, 5 V. |
+| `tnc134/` | The same software TNC ported to WDC's W65C134SXB: Port 5 I/O, the ROM monitor's console, 5 V. Includes the South Georgia test mode (`mk_sim.py`). |
+| `amtor/` | An HF AMTOR (SITOR-B) message station for the W65C134SXB that needs no PC: a PS/2 keyboard, a 20x4 LCD and a Kenwood TS-480. It can be written into the SXB's flash so it starts at power-up. |
 | `hardware/` | Radio interface schematic (`radio_interface.svg`), plus `pcb/`: the CNC-milled board's GRBL G-code, drawings and generator. |
 | `monitor/` | MMON, a machine-language monitor: dump and edit memory and I/O, load S19 files, run code, catch BRKs. |
 | `probes/` | Small programs that test the board's hardware, and what they found. |
 | `lib/` | `dbg.inc`: register and memory dump helpers to include in any program. |
 | `tools/emu/` | The 65C02 emulator of the MyMENSCH that every test runs on. |
+| `tools/sxb134/` | `sxb134.py`: loads, verifies and starts programs on a W65C134SXB through its ROM monitor (instead of EasySXB). It can also write the SXB's SST39SF010A flash (`--flash`). |
+| `tools/aprsmap/` | `aprsmap.py`: APRS stations on an ASCII map in a text terminal, from a serial TNC, KISS, or Direwolf over TCP. It can load `tnc134` onto the SXB (`--load`), and `:` opens a command line to the TNC. |
 | `docs/` | W65C165i1M08SA datasheet. |
 
 ## Building and loading
 
 You need WDCTools (`C:\WDC\Tools\BIN` on the PATH) and WDC's uploader. Each program folder has a `mk_*.bat`.
+
+For the W65C134SXB, use this repo's uploader instead (see `tools/sxb134/README.md`), or let the map load the TNC and start it:
+
+```
+python tools\sxb134\sxb134.py COM5 tnc134\tnc134.hex --go 2000 --term
+python tools\aprsmap\aprsmap.py COM5 --load --send T --home 31.45,-83.51
+```
+
+For the MyMENSCH:
 
 ```
 cd tnc
@@ -64,6 +80,10 @@ Every program has an emulator test; none needs the board:
 ```
 python tnc/test_tnc.py
 python tnc134/test_tnc134.py
+python tools/sxb134/test_sxb134.py
+python tools/sxb134/test_flash134.py
+python tools/aprsmap/test_aprsmap.py
+python amtor/test_amtor.py             (slow and memory-hungry; close other programs first)
 python tnc/aprs_decode/run_tests.py
 python monitor/test_mmon.py
 python probes/test/test_regmap.py      (also test_probe, test_adcprobe, test_dbgdemo)

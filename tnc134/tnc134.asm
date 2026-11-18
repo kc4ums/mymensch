@@ -11,8 +11,8 @@
 ;    P57       comparator (RX audio)
 ;    (Port 5 is not used by the SXB's ROM monitor, which owns P44-P47
 ;    and Port 6 for its UART.)
-;  LEDs: Port 3 bits 0-2, the SXB's chip-select LED lines (WDC's LEDCS03
-;  example drives them through PD3). Change LED_* below if yours differ.
+;  LEDs: Port 3 bits 0-2, the SXB's chip-select LED lines. They light
+;  when the pin is LOW (checked on a real SXB), so on = TRB, off = TSB.
 ;
 ;  Edit the CONFIG block below, build with mk_tnc134.bat, then load
 ;  tnc134.hex (or .s28) with EasySXB (9600 baud) and start it with
@@ -65,7 +65,7 @@ SQC_BIT         EQU     $20             ; P55
 HB_LED          EQU     $01             ; P30: heartbeat
 TX_LED          EQU     $02             ; P31: radio keyed
 RX_LED          EQU     $04             ; P32: channel busy (SQC or audio)
-LEDS            EQU     PD3
+LEDS            EQU     PD3             ; active low: 0 = lit
 RX_BIT          EQU     $80             ; P57, comparator output
 RX_EDGES        EQU     16              ; edges in 10 ms that mean "audio"
 RX_HANG         EQU     20              ; RX LED stays on 200 ms after
@@ -77,7 +77,7 @@ FRAME           EQU     $0300           ; AX.25 frame before encoding (256)
 TONES           EQU     $0800           ; one byte per bit, $0800-$17FF
 TONES_END       EQU     $1800
 
-; zero page ($B0-$D1; the ROM monitor uses $40-$A3)
+; zero page ($B0-$D4; the ROM monitor uses $40-$A3)
 PH              EQU     $B0             ; 2, phase accumulator
 INCL            EQU     $B2             ; phase increment
 INCH            EQU     $B3
@@ -106,6 +106,9 @@ EDGES           EQU     $CD             ; P57 changes in this tick
 SPTR            EQU     $CE             ; 2
 RXHANG          EQU     $D0             ; ticks the RX LED stays on
 OUTV            EQU     $D1             ; next DAC + PTT value
+SIMON           EQU     $D2             ; test mode (simulated stations) on
+SIMT            EQU     $D3             ; seconds to the next simulated packet
+SIMK            EQU     $D4             ; next slot
 
 ; Timer 1 periods at PHI2 = 3.6864 MHz. The 134 reloads T1 from its latch
 ; when it times out; taken here as period = latch + 1. If test tone 1 reads
@@ -142,6 +145,7 @@ cfg_txd:  db    45              ; TXDELAY in flags (45 = 300 ms)
 cfg_sqc:  db    0               ; 0 = ignore SQC, 1 = busy when high,
                                 ; 2 = busy when low
 cfg_cmt:  db    'W65C134SXB software TNC',0       ; comment, max 40 chars
+cfg_simg: db    3               ; test mode: seconds between simulated packets
 
         ds      $2100-*
 ; 64-step sine, 4 bits, page aligned so lda sine,x never adds a cycle
@@ -160,7 +164,7 @@ START:
         ldx     #$FF
         txs
         lda     #HB_LED+TX_LED+RX_LED
-        trb     LEDS
+        tsb     LEDS
         lda     #T1F
         trb     IER2                    ; no Timer 1 interrupt (polled)
         lda     #$06
@@ -180,6 +184,8 @@ START:
         lda     #1                      ; first beacon a minute after start
         sta     NEXTM
         stz     PERIOD
+        stz     SIMON
+        jsr     sim_reset
         lda     cfg_ok
         beq     st_nc
         lda     cfg_bmin
@@ -230,16 +236,17 @@ mn_go:  txa
 mn_jmp: jmp     (key_tbl,x)
 
 key_chr:
-        db      'B12PS?'
-NKEY    EQU     6
+        db      'B12PST?'
+NKEY    EQU     7
 key_tbl:
-        dw      k_beacon, k_tone1, k_tone2, k_period, k_status, k_help
+        dw      k_beacon, k_tone1, k_tone2, k_period, k_status, k_test, k_help
 
 k_help: PRINT   s_help
         rts
 
-; once a second: periodic beacon
-second: inc     SECS
+; once a second: test mode, periodic beacon
+second: jsr     sim_tick
+        inc     SECS
         lda     SECS
         cmp     #60
         bne     sc_x
@@ -263,10 +270,10 @@ heartbeat:
         cmp     #23
         bcc     hb_on
 hb_off: lda     #HB_LED
-        trb     LEDS
+        tsb     LEDS
         rts
 hb_on:  lda     #HB_LED
-        tsb     LEDS
+        trb     LEDS
         rts
 
 ; RX LED: on while the channel is busy, held RX_HANG ticks after
@@ -287,10 +294,10 @@ rl_busy:
         lda     #RX_HANG
         sta     RXHANG
         lda     #RX_LED
-        tsb     LEDS
+        trb     LEDS
         rts
 rl_off: lda     #RX_LED
-        trb     LEDS
+        tsb     LEDS
         rts
 
 ; A <> 0 (Z=0) if SQC says the channel is busy (cfg_sqc must be 1 or 2)
@@ -334,7 +341,10 @@ kp_ok:  lda     PERIOD
         jmp     k_status
 
 k_status:
-        PRINT   s_st1
+        lda     SIMON
+        beq     ks_b
+        PRINT   s_simon
+ks_b:   PRINT   s_st1
         lda     PERIOD
         beq     ks_off
         PRINT   s_on
@@ -346,6 +356,76 @@ k_status:
         PRINT   s_min2
         rts
 ks_off: PRINT   s_off
+        rts
+
+;---------------------------------------------------------------------------
+; test mode (key T): print simulated packets from 20 made-up stations in
+; South Georgia, one every cfg_simg seconds, as if they had been received.
+; Nothing is transmitted. The table is sim_sga.inc, made by mk_sim.py.
+;---------------------------------------------------------------------------
+k_test: lda     SIMON
+        eor     #1
+        sta     SIMON
+        beq     kt_off
+        jsr     sim_reset
+        PRINT   s_simon
+        rts
+kt_off: PRINT   s_simoff
+        rts
+
+sim_reset:
+        lda     #1                      ; first packet in a second
+        sta     SIMT
+        stz     SIMK
+        ldx     #SIM_N-1
+sr_lp:  stz     sim_idx,x
+        dex
+        bpl     sr_lp
+        rts
+
+sim_tick:
+        lda     SIMON
+        beq     sk_x
+        dec     SIMT
+        bne     sk_x
+        lda     cfg_simg
+        bne     sk_g
+        lda     #1
+sk_g:   sta     SIMT
+        jmp     sim_one
+sk_x:   rts
+
+; print the next packet of slot SIMK, then move on to the next slot
+sim_one:
+        lda     SIMK
+        asl     a
+        tax
+        lda     sim_tab,x               ; the slot's list of packets
+        sta     PTR
+        lda     sim_tab+1,x
+        sta     PTR+1
+        ldx     SIMK
+        lda     sim_idx,x               ; which one this time
+        asl     a
+        tay
+        lda     (PTR),y
+        tax
+        iny
+        lda     (PTR),y
+        tay
+        jsr     puts
+        jsr     crlf
+        ldx     SIMK
+        inc     sim_idx,x
+        lda     sim_idx,x
+        cmp     sim_cnt,x
+        bcc     so_n
+        stz     sim_idx,x
+so_n:   inx
+        cpx     #SIM_N
+        bcc     so_k
+        ldx     #0
+so_k:   stx     SIMK
         rts
 
 k_beacon:
@@ -614,7 +694,7 @@ nz_x:   rts
 ;---------------------------------------------------------------------------
 transmit:
         lda     #TX_LED
-        tsb     LEDS              ; TX LED on while keyed
+        trb     LEDS              ; TX LED on while keyed
         stz     PH
         stz     PH+1
         lda     #DAC_MID+PTT_BIT        ; first sample: mid-scale, keyed
@@ -699,7 +779,7 @@ tx_ow:  bit     IFR2
         beq     tx_ow
         jsr     radio_idle
         lda     #TX_LED
-        trb     LEDS
+        tsb     LEDS
         cli
         rts
 
@@ -863,6 +943,7 @@ pd_sk:  pla
 s_banner:
         db      $0D,$0A,'W65C134SXB software TNC (transmit)   ? = help',$0D,$0A,0
 s_help: db      'B beacon now   P periodic on/off   S status',$0D,$0A
+        db      'T test mode on/off: simulated stations in South GA (not sent)',$0D,$0A
         db      '1 1200 Hz tone   2 2200 Hz tone   (any key stops a tone)',$0D,$0A
         db      'ESC back to the monitor',$0D,$0A,0
 s_nocfg:
@@ -879,8 +960,16 @@ s_min:  db      ' min, next in ',0
 s_min2: db      ' min',$0D,$0A,0
 s_off:  db      'off',$0D,$0A,0
 s_bye:  db      'back to the monitor',$0D,$0A,0
+s_simon:
+        db      'test mode on: simulated South GA stations, not transmitted',$0D,$0A,0
+s_simoff:
+        db      'test mode off',$0D,$0A,0
 s_clk:  db      'WARNING: monitor reports a crystal other than 3.6864 MHz;'
         db      ' tones and baud rate will be off. Fix T1_SAMPLE/T1_TICK.',$0D,$0A,0
+
+        include 'sim_sga.inc'
+sim_idx:
+        ds      SIM_N                   ; next packet in each slot
 
         ENDS
         END

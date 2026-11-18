@@ -1,5 +1,7 @@
 REM Build the W65C134SXB software TNC
 del tnc134.obj tnc134.lst tnc134.hex tnc134.s28 tnc134.s19 2>nul
+python mk_sim.py
+if errorlevel 1 goto fail
 WDC02AS -g -l tnc134.asm
 if errorlevel 1 goto fail
 WDCLN -g -sz -t -HI tnc134
