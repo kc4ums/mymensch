@@ -136,9 +136,9 @@ cfg_dest: db    'APZ65C',0      ; destination (APZ = experimental software)
 cfg_path: db    'WIDE1 ',1      ; digipeater path, up to 2 entries
           db    'WIDE2 ',1
 cfg_npath: db   2               ; 0, 1 or 2 path entries used
-cfg_lat:  db    '0000.00N'      ; ddmm.hhN  (latitude)
+cfg_lat:  db    '3130.96N'      ; ddmm.hhN  (latitude)
 cfg_symt: db    '/'             ; symbol table
-cfg_lon:  db    '00000.00W'     ; dddmm.hhW (longitude)
+cfg_lon:  db    '08323.76W'     ; dddmm.hhW (longitude)
 cfg_symc: db    '-'             ; symbol code: '-' house, '>' car
 cfg_bmin: db    1              ; periodic beacon interval, minutes
 cfg_txd:  db    45              ; TXDELAY in flags (45 = 300 ms)
