@@ -90,13 +90,13 @@ Pin 4 isn't used. Check the cable's colours with an ohmmeter, because PS/2 cable
 
 ## Building it
 
-- **Sockets:** put every DIP chip in a socket. The chips are 0.6" wide for the CPU, RAM, flash, VIAs and ACIA, and 0.3" for the logic and the LM393. The oscillators fit 8-pin sockets (14-pin full-can parts also fit their 4 corner holes). A ZIF socket for the flash is handy if you reflash it out of circuit.
+- **Sockets:** put every DIP chip in a socket. The chips are 0.6" wide for the CPU, RAM, flash, VIAs and ACIA, and 0.3" for the logic and the LM393. The oscillators are **half-size (8-pin DIP) cans** in 8-pin sockets. Full-size 14-pin cans such as the ECS-100AX do not fit. A ZIF socket for the flash is handy if you reflash it out of circuit.
 - **Do not fit R121 and R221.** They are the 20k SQC dividers for a 3.3 V board, marked DNP on the board.
 - **LM7805 heat:** at 13.8 V in and about 200 mA with the LCD backlight on, the LM7805 dissipates around 2 W. Fit a clip-on TO-220 heatsink.
 - **Setting the audio level:** set RV1 / RV2 (TX audio level) with the radio on a dummy load, as in `../../tnc/README.md`.
 - **ACIA bug:** the W65C51N's "transmit register empty" bit is stuck on, a known silicon bug. Send with a delay of one character time (about 1.04 ms at 9600 baud) instead of polling it.
 
-Parts are listed in `bom.csv`, written by `python mk_fab.py --bom`.
+Parts are listed in `bom.csv`, written by `python mk_fab.py --bom` from the `BUY` table in `board.py`. Each line has a manufacturer part number, and a Mouser number where one was confirmed (Nov 2026). To order, upload `bom.csv` to Mouser's BOM tool (mouser.com/bom). It matches the manufacturer part numbers, including on lines with no Mouser number. The last rows are parts that aren't on the PCB: sockets, heatsink, jumpers, LCD, PS/2 breakout and USB module.
 
 ## Files
 

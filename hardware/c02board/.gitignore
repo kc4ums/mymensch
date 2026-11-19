@@ -8,3 +8,4 @@ fp-info-cache
 *.lck
 *.bak
 route_log.txt
+.~lock.*#

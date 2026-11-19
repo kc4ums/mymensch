@@ -53,9 +53,21 @@ def bom():
     path = os.path.join(HERE, 'bom.csv')
     with open(path, 'w', newline='') as f:
         w = csv.writer(f)
-        w.writerow(['Qty', 'References', 'Value', 'Footprint', 'Part / notes'])
+        w.writerow(['Qty', 'References', 'Value', 'Footprint', 'Manufacturer', 'Mfr part',
+                    'Mouser', 'Notes'])
+        hdr = []
         for refs, v, fp, mpn in rows:
-            w.writerow([len(refs), ' '.join(refs), v, fp, mpn])
+            if fp.startswith('PinHeader_1x'):          # one strip covers all of them: order it once
+                first = not hdr
+                hdr.append(refs[0])
+                buy = board.HEADER_STRIP if first else ('', 'cut from the strip on the %s line' % hdr[0], '')
+            else:
+                buy = board.BUY.get((re.sub(r'\d.*', '', refs[0]), v))
+                if buy is None:
+                    sys.exit('bom: no BUY entry for %s %r' % (refs[0], v))
+            w.writerow([len(refs), ' '.join(refs), v, fp, buy[0], buy[1], buy[2], mpn])
+        for qty, what, refs in board.EXTRAS:
+            w.writerow([qty, refs, what, '', '', '', '', 'not on the PCB'])
     print('bom.csv: %d lines, %d parts' % (len(rows), sum(len(r[0]) for r in rows)))
 
 

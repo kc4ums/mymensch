@@ -150,9 +150,9 @@ part('U10', '74HC138', 'DIP16', 100, 72, pins={
 
 # Oscillators: pin 1 (enable on some parts) to +5V, 4 GND, 5 out, 8 +5V
 part('X1', '3.6864MHz', 'OSC', 113, 92, pins={1: '+5V', 4: 'GND', 5: 'PHI2', 8: '+5V'},
-     mpn='ECS-100AX-036 or any 5 V HCMOS full/half-can', note='8-pin socket: change the CPU clock here')
+     mpn='any 5 V HCMOS half-size (8-pin DIP) can', note='8-pin socket: change the CPU clock here')
 part('X2', '1.8432MHz', 'OSC', 135, 92, pins={1: '+5V', 4: 'GND', 5: 'ACIA_CLK', 8: '+5V'},
-     mpn='ECS-100AX-018 or any 5 V HCMOS half-can', note='8-pin socket')
+     mpn='any 5 V HCMOS half-size (8-pin DIP) can', note='8-pin socket')
 
 # Reset: DS1813 supervisor (open drain, internal pull-up, debounces the button)
 part('U11', 'DS1813-10+', 'TO92', 64, 100, pins={1: '~{RES}', 2: '+5V', 3: 'GND'},
@@ -181,7 +181,7 @@ part('JP2', 'USB PWR', 'H1x2', 170, 92, pins={1: 'USB_5V', 2: '+5V'},
 
 # ------------------------------------------------------------ power
 part('J1', '9-15V', 'TB2', 4, 20, rot=270, pins={1: 'VRAW', 2: 'GND'},
-     mpn='Phoenix MKDS 1,5/2-5,08 or any 5 mm screw terminal')
+     mpn='Phoenix MKDS 1,5/2 or any 5 mm screw terminal')
 part('D1', '1N5819', 'D41', 20, 16, pins={1: 'VIN', 2: 'VRAW'}, note='reverse polarity protection')
 part('C1', '100uF 25V', 'CP8', 34, 7, pins={1: 'VIN', 2: 'GND'})
 part('U12', 'LM7805', 'TO220', 40, 16, pins={1: 'VIN', 2: 'GND', 3: '+5V'},
@@ -231,7 +231,7 @@ part('J6', 'I/O', 'H2x10', 172, 76 + 0, rot=0, pins={
 # LM393: comparator A = radio 1, B = radio 2; one shared reference.
 part('U13', 'LM393', 'DIP8', 44, 64, pins={
     1: 'R1_RX', 2: 'VREF', 3: 'R1_NA', 4: 'GND', 5: 'R2_NA', 6: 'VREF', 7: 'R2_RX', 8: '+5V'},
-    mpn='LM393N')
+    mpn='LM393P (TI) or any LM393 DIP-8')
 part('R4', '10k', 'R', 36, 54, rot=90, pins={1: '+5V', 2: 'VREF'}, note='VREF = 2.0 V')
 part('R5', '6.8k', 'R', 40, 54, rot=90, pins={1: 'VREF', 2: 'GND'})
 part('C4', '10uF', 'CP5', 50, 56, pins={1: 'VREF', 2: 'GND'})
@@ -369,3 +369,70 @@ for _p in PARTS:
         _p['x'], _p['y'], _p['rot'] = PLACE[_p['ref']]
     else:
         raise SystemExit('no placement for ' + _p['ref'])
+
+
+# ------------------------------------------------------------ what to buy
+# (ref letters, value) -> (manufacturer, manufacturer part, Mouser number).
+# Mouser numbers were checked against Mouser listings in Nov 2026 where one
+# was found; the rest are left blank. Mouser's BOM tool (mouser.com/bom)
+# matches the manufacturer part numbers, so blank lines still import.
+# Resistors: Yageo MFR-25 (1/4 W 1 % metal film); Mouser = 603- + the part.
+def _yageo(v):
+    pn = 'MFR-25FBF52-' + v
+    return ('Yageo', pn, '603-' + pn)
+
+
+BUY = {
+    ('U', 'W65C02S6TPG-14'): ('WDC', 'W65C02S6TPG-14', '955-W65C02S6TPG-14'),
+    ('U', 'AS6C62256-55PCN'): ('Alliance Memory', 'AS6C62256-55PCN', ''),
+    ('U', 'SST39SF010A-70-4C-PHE'): ('Microchip', 'SST39SF010A-70-4C-PHE', '804-39SF010A7CPHE'),
+    ('U', 'W65C22N6TPG-14'): ('WDC', 'W65C22N6TPG-14', '955-W65C22N6TPG-14'),
+    ('U', 'W65C51N6TPG-14'): ('WDC', 'W65C51N6TPG-14', ''),
+    ('U', '74HC00'): ('Texas Instruments', 'SN74HC00N', '595-SN74HC00N'),
+    ('U', '74HC30'): ('Texas Instruments', 'SN74HC30N', ''),
+    ('U', '74HC138'): ('Texas Instruments', 'SN74HC138N', '595-SN74HC138N'),
+    ('U', 'DS1813-10+'): ('Analog Devices', 'DS1813-10+', '700-DS1813-10+'),
+    ('U', 'LM7805'): ('Texas Instruments', 'LM7805CT/NOPB', '926-LM7805CT/NOPB'),
+    ('U', 'LM393'): ('Texas Instruments', 'LM393P', '595-LM393P'),
+    ('X', '3.6864MHz'): ('CTS', 'MXO45HS-3C-3M686400', '774-MXO45HS-3C-3.6'),
+    ('X', '1.8432MHz'): ('CTS', 'MXO45HS-3C-1M843200', ''),
+    ('Q', '2N7000'): ('onsemi', '2N7000', '512-2N7000'),
+    ('D', '1N5819'): ('onsemi', '1N5819RLG', '863-1N5819RLG'),
+    ('D', 'PWR'): ('Kingbright', 'WP710A10GD', '604-WP710A10GD'),
+    ('D', 'TX1'): ('Kingbright', 'WP710A10ID', ''),
+    ('D', 'TX2'): ('Kingbright', 'WP710A10ID', ''),
+    ('D', 'LED'): ('Kingbright', 'WP710A10GD', '604-WP710A10GD'),
+    ('C', '100uF 25V'): ('Nichicon', 'UVR1H101MPD (50 V, 8 mm, 3.5 mm pitch)', ''),
+    ('C', '10uF'): ('Nichicon', 'UVR1H100MDD (50 V, 5 mm, 2 mm pitch)', ''),
+    ('C', '100nF'): ('KEMET', 'C330C104K5R5TA', ''),
+    ('C', '1uF'): ('KEMET', 'C330C105K5R5TA', '80-C330C105K5R'),
+    ('C', '10nF'): ('KEMET', 'C330C103K5R5TA', ''),
+    ('RV', '10k'): ('Bourns', '3296W-1-103LF', '652-3296W-1-103LF'),
+    ('SW', 'RESET'): ('TE Connectivity', '1825910-6', '650-1825910-6'),
+    ('SW', 'NMI'): ('TE Connectivity', '1825910-6', '650-1825910-6'),
+    ('J', '9-15V'): ('Phoenix Contact', '1715721 (MKDS 1,5/2)', ''),
+    ('J', 'RADIO 1'): ('Phoenix Contact', '1715750 (MKDS 1,5/5)', ''),
+    ('J', 'RADIO 2'): ('Phoenix Contact', '1715750 (MKDS 1,5/5)', ''),
+    ('J', 'I/O'): ('any', '2x10 pin header, 2.54 mm', ''),
+}
+for _v, _pn in (('10k', '10K'), ('6.8k', '6K8'), ('3.3k', '3K3'), ('1k', '1K'), ('33', '33R'),
+                ('4.7k', '4K7'), ('100k', '100K'), ('1M', '1M'), ('100', '100R'),
+                ('20k', '20K'), ('2.2k', '2K2')):
+    BUY[('R', _v)] = _yageo(_pn)
+# 1-row headers (J3 J4 J5 JP1 JP2) are all cut from 36-pin strips
+HEADER_STRIP = ('Amphenol', '68000-136HLF (1x36 strip, cut to length)', '649-68000-136HLF')
+
+# Not footprints on the board, but needed to build it: (qty, what, for)
+EXTRAS = [
+    (3, 'socket DIP-40 0.6 in', 'U1 U4 U5'),
+    (2, 'socket DIP-28 0.6 in', 'U2 U6'),
+    (1, 'socket DIP-32 0.6 in (or a ZIF)', 'U3'),
+    (3, 'socket DIP-14 0.3 in', 'U7 U8 U9'),
+    (1, 'socket DIP-16 0.3 in', 'U10'),
+    (3, 'socket DIP-8 0.3 in', 'U13 X1 X2'),
+    (1, 'TO-220 clip-on heatsink', 'U12'),
+    (2, 'jumper shunt 2.54 mm', 'JP1 JP2'),
+    (1, '20x4 HD44780 LCD, 5 V', 'J3'),
+    (1, 'PS/2 socket breakout, 5 V', 'J4'),
+    (1, 'USB-serial module, FTDI pinout, 5 V', 'J5'),
+]
