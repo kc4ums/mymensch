@@ -64,6 +64,8 @@ check(all(pin('U1', CPU_A[i]) == 'A%d' % i for i in range(16)), 'W65C02S address
 check(all(pin('U1', CPU_D[i]) == 'D%d' % i for i in range(8)), 'W65C02S data pins D0-D7')
 check(pin('U1', 34) == 'RW' and pin('U1', 37) == 'PHI2' and pin('U1', 40) == '~{RES}'
       and pin('U1', 4) == '~{IRQ}' and pin('U1', 6) == '~{NMI}', 'W65C02S RWB, PHI2, RESB, IRQB, NMIB')
+check(pin('X1', 5) == 'PHI2_X' and pin('R44', 1) == 'PHI2_X' and pin('R44', 2) == 'PHI2',
+      'X1 drives PHI2 through the 33 ohm series resistor R44')
 check(pin('U1', 2) == 'RDY' and pin('U1', 36) == '+5V' and pin('U1', 38) == '+5V',
       'RDY pulled up, BE and SOB high')
 

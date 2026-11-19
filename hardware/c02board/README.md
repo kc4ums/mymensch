@@ -2,7 +2,7 @@
 
 This is a single board computer for the APRS TNC and the AMTOR station: a WDC W65C02S, RAM, flash, two radio ports, an LCD and keyboard connection, and USB serial to a PC. **Every part is through-hole** and every chip sits in a socket, so it can be built and repaired with a soldering iron. The PCB is a 2-layer **185 × 125 mm** board to order from JLCPCB, PCBWay or similar.
 
-**Status: routed, DRC clean, Gerbers ready.** Placement, schematic, netlist and routing are done. KiCad's DRC shows 0 errors and 0 unconnected pads. `python mk_fab.py` writes `fab/c02comm_gerbers.zip` (not committed; regenerate it). On 2026-11-19 the PS/2 data line moved from VIA2 CA2 to PB4, because a 65C22 can't read CA2's level, and the board was re-routed (run 4). Nothing has been built.
+**Status: routed, DRC clean, Gerbers ready.** Placement, schematic, netlist and routing are done. KiCad's DRC shows 0 errors and 0 unconnected pads. `python mk_fab.py` writes `fab/c02comm_gerbers.zip` (not committed; regenerate it). The clock oscillator X1 drives PHI2 through R44 (33 ohm), 7 mm from its output pin. Nothing has been built.
 
 ![placement](place.png)
 
@@ -10,7 +10,7 @@ This is a single board computer for the APRS TNC and the AMTOR station: a WDC W6
 
 | Block | Parts | Notes |
 |---|---|---|
-| CPU | W65C02S, 3.6864 MHz oscillator | The same clock as the existing TNC and AMTOR code. The oscillator is socketed: change it to change the speed. |
+| CPU | W65C02S, 3.6864 MHz oscillator | The same clock as the existing TNC and AMTOR code. The oscillator is socketed: change it to change the speed. It drives PHI2 through R44 (33 ohm), which damps ringing on the long clock track. |
 | RAM | AS6C62256, 32 KB | `$0000-$7EFF` |
 | Flash | SST39SF010A, 128 KB | The same chip as on the W65C134SXB. `$8000-$FFFF` shows one of four 32 KB banks. JP1 write-protects it. |
 | VIA1 | W65C22N | The two radio ports |
@@ -153,6 +153,8 @@ The board has 319 connections, mostly the address and data buses. They are route
 **Run 3 (2026-11-19): all 319 connections routed, 0 unconnected pads.** The optimizer pass made the score worse and was rejected, so the router's result was kept. `drc.txt` lists 6 `starved_thermal` errors: GND pads on Q1, Q2, U5, J6 and R41 whose thermal spokes reach only an isolated island of the plane. Every one of these pads also has its own GND track, so they are connected. **Fixed:** KiCad ignored the one-spoke rule in `c02comm.kicad_dru` and used the board's default minimum of 2 spokes. `mk_pcb.py` now sets `min_resolved_spokes: 1` in the project's board rules. With that, the DRC shows 0 errors, and `mk_fab.py` wrote the Gerbers.
 
 **Run 4 (2026-11-19):** re-routed after moving the PS/2 data line to PB4. All connections routed. With the one-spoke thermal setting, the DRC shows 0 errors and 0 unconnected pads.
+
+**Run 5 (2026-11-19):** re-routed after adding R44, the PHI2 series resistor. DRC 0 errors, 0 unconnected pads. The X1-to-R44 track is 7 mm; the PHI2 track after R44 is 267 mm.
 
 ### To re-route
 

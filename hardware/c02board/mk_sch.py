@@ -167,7 +167,7 @@ def lib_symbol(name, pn, style):
 GROUPS = [
     ('CPU and memory', ['U1', 'U2', 'U3']),
     ('I/O chips', ['U4', 'U5', 'U6', 'X2']),
-    ('Address decoding, clock', ['U7', 'U8', 'U9', 'U10', 'X1']),
+    ('Address decoding, clock', ['U7', 'U8', 'U9', 'U10', 'X1', 'R44']),
     ('Reset, interrupts, flash bank, write protect, LEDs', ['U11', 'SW1', 'SW2', 'R30', 'C30', 'R31', 'R32',
                                                             'JP1', 'R33', 'R34'] +
      ['D%d' % i for i in range(10, 14)] + ['R%d' % i for i in range(40, 44)]),

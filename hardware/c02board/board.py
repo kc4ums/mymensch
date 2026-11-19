@@ -149,8 +149,12 @@ part('U10', '74HC138', 'DIP16', 100, 72, pins={
     15: '~{CS0}', 16: '+5V'}, mpn='74HC138 (TI SN74HC138N)')
 
 # Oscillators: pin 1 (enable on some parts) to +5V, 4 GND, 5 out, 8 +5V
-part('X1', '3.6864MHz', 'OSC', 113, 92, pins={1: '+5V', 4: 'GND', 5: 'PHI2', 8: '+5V'},
+part('X1', '3.6864MHz', 'OSC', 113, 92, pins={1: '+5V', 4: 'GND', 5: 'PHI2_X', 8: '+5V'},
      mpn='any 5 V HCMOS half-size (8-pin DIP) can', note='8-pin socket: change the CPU clock here')
+# PHI2 is a ~300 mm daisy chain (CPU, VIAs, ACIA, decode, header): a series
+# resistor at the oscillator damps reflections that could double-clock a chip.
+part('R44', '33', 'R', 113, 98, pins={1: 'PHI2_X', 2: 'PHI2'},
+     note='PHI2 series termination, close to X1 (0 ohm / wire link if not needed)')
 part('X2', '1.8432MHz', 'OSC', 135, 92, pins={1: '+5V', 4: 'GND', 5: 'ACIA_CLK', 8: '+5V'},
      mpn='any 5 V HCMOS half-size (8-pin DIP) can', note='8-pin socket')
 
@@ -321,7 +325,7 @@ PLACE = {
     # glue logic row
     'U7': (69, 70, 0), 'U8': (81, 70, 0), 'U9': (93, 70, 0), 'U10': (105, 70, 0),
     'C16': (69, 92, 0), 'C17': (81, 92, 0), 'C18': (93, 92, 0), 'C19': (105, 92, 0),
-    'X1': (118, 80, 0), 'C21': (118, 86, 0),
+    'X1': (118, 80, 0), 'C21': (118, 86, 0), 'R44': (127.5, 66, 180),
     'JP1': (133, 70, 0), 'R33': (133, 90, 90), 'R34': (137, 90, 90),
     # serial
     'U6': (142, 70, 0), 'C15': (144, 108, 0), 'X2': (162, 80, 0), 'C22': (162, 86.5, 0),
