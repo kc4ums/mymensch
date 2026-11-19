@@ -23,7 +23,7 @@ A software TNC for WDC's MyMENSCH Rev-C board and a Kenwood TM-V71A. The MyMENSC
 | `tnc134/` | The same software TNC ported to WDC's W65C134SXB: Port 5 I/O, the ROM monitor's console, 5 V. Includes the South Georgia test mode (`mk_sim.py`). |
 | `amtor/` | An HF AMTOR (SITOR-B) message station for the W65C134SXB that needs no PC: a PS/2 keyboard, a 20x4 LCD and a Kenwood TS-480. It can be written into the SXB's flash so it starts at power-up. |
 | `hardware/` | Radio interface schematic (`radio_interface.svg`), plus `pcb/`: the CNC-milled board's GRBL G-code, drawings and generator. |
-| `hardware/c02board/` | C02COMM: an all-through-hole W65C02S board for these projects (RAM, flash, 2 VIAs, ACIA, two radio ports, LCD, PS/2, USB serial). It's a KiCad 10 project generated from `board.py`. Routed (0 unconnected); 6 GND thermal-relief DRC errors left before Gerbers. |
+| `hardware/c02board/` | C02COMM: an all-through-hole W65C02S board for these projects (RAM, flash, 2 VIAs, ACIA, two radio ports, LCD, PS/2, USB serial). It's a KiCad 10 project generated from `board.py`. Routed, DRC clean, Gerbers generated; not yet ordered or built. |
 | `monitor/` | MMON, a machine-language monitor: dump and edit memory and I/O, load S19 files, run code, catch BRKs. |
 | `probes/` | Small programs that test the board's hardware, and what they found. |
 | `lib/` | `dbg.inc`: register and memory dump helpers to include in any program. |

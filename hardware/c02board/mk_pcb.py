@@ -47,7 +47,10 @@ def write_project():
         'board': {'design_settings': {
             'rules': {'min_clearance': 0.2, 'min_track_width': 0.15, 'min_via_diameter': 0.6,
                       'min_through_hole_diameter': 0.3, 'min_copper_edge_clearance': 0.3,
-                      'min_hole_clearance': 0.25},
+                      'min_hole_clearance': 0.25,
+                      # GND pins have their own tracks, so a thermal with one spoke is fine
+                      # (KiCad ignored this as a .kicad_dru rule; it must be the board setting)
+                      'min_resolved_spokes': 1},
             'track_widths': [0.0, 0.3, 0.5, 0.8, 1.2],
             'via_dimensions': [{'diameter': 0.0, 'drill': 0.0}, {'diameter': 0.8, 'drill': 0.4}],
         }},
