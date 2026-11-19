@@ -1,0 +1,10 @@
+# generated or local KiCad files
+*.dsn
+drc.txt
+fab/
+*.kicad_prl
+*-backups/
+fp-info-cache
+*.lck
+*.bak
+route_log.txt

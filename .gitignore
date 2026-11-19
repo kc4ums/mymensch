@@ -6,3 +6,5 @@
 __pycache__/
 # personal notes
 wdc_email.txt
+# KiCad lock files
+~*.lck

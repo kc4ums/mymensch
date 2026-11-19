@@ -1,0 +1,4 @@
+(version 1)
+(rule "gnd_thermals"
+  (condition "A.Type == 'Zone'")
+  (constraint min_resolved_spokes (min 1)))

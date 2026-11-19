@@ -1,0 +1,48 @@
+Qty,References,Value,Footprint,Part / notes
+1,C1,100uF 25V,CP_Radial_D8.0mm_P3.50mm,
+3,C2 C4 C23,10uF,CP_Radial_D5.0mm_P2.00mm,
+15,C3 C10 C11 C12 C13 C14 C15 C16 C17 C18 C19 C20 C21 C22 C30,100nF,C_Disc_D5.0mm_W2.5mm_P5.00mm,
+4,C101 C104 C201 C204,1uF,C_Disc_D5.0mm_W2.5mm_P5.00mm,
+2,C103 C203,10nF,C_Disc_D5.0mm_W2.5mm_P5.00mm,
+1,D1,1N5819,D_DO-41_SOD81_P10.16mm_Horizontal,
+1,D2,PWR,LED_D3.0mm,"3 mm LED, green"
+1,D4,TX1,LED_D3.0mm,"3 mm LED, red"
+1,D5,TX2,LED_D3.0mm,"3 mm LED, red"
+4,D10 D11 D12 D13,LED,LED_D3.0mm,3 mm LED
+1,J1,9-15V,"TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal","Phoenix MKDS 1,5/2-5,08 or any 5 mm screw terminal"
+1,J3,LCD 20x4,PinHeader_1x16_P2.54mm_Vertical,
+1,J4,PS/2 KBD,PinHeader_1x04_P2.54mm_Vertical,
+1,J5,USB-SERIAL,PinHeader_1x06_P2.54mm_Vertical,
+1,J6,I/O,PinHeader_2x10_P2.54mm_Vertical,
+1,J7,RADIO 1,"TerminalBlock_Phoenix_MKDS-1,5-5_1x05_P5.00mm_Horizontal",5 mm 5-way screw terminal
+1,J8,RADIO 2,"TerminalBlock_Phoenix_MKDS-1,5-5_1x05_P5.00mm_Horizontal",5 mm 5-way screw terminal
+1,JP1,FLASH WE,PinHeader_1x03_P2.54mm_Vertical,
+1,JP2,USB PWR,PinHeader_1x02_P2.54mm_Vertical,
+2,Q1 Q2,2N7000,TO-92_Inline_Wide,2N7000 (TO-92)
+16,R4 R33 R34 R35 R101 R106 R114 R115 R116 R120 R201 R206 R214 R215 R216 R220,10k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+1,R5,6.8k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+3,R30 R31 R32,3.3k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+7,R36 R40 R41 R42 R43 R122 R222,1k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+1,R37,33,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+4,R38 R39 R107 R207,4.7k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+6,R102 R109 R118 R202 R209 R218,100k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+2,R103 R203,1M,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+2,R108 R208,100,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+10,R110 R111 R112 R113 R117 R210 R211 R212 R213 R217,20k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+2,R119 R219,2.2k,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
+3,RV1 RV2 RV3,10k,Potentiometer_Bourns_3296W_Vertical,
+1,SW1,RESET,SW_PUSH_6mm,6 mm tactile switch
+1,SW2,NMI,SW_PUSH_6mm,6 mm tactile switch
+1,U1,W65C02S6TPG-14,DIP-40_W15.24mm_Socket,WDC W65C02S6TPG-14
+1,U2,AS6C62256-55PCN,DIP-28_W15.24mm_Socket,Alliance AS6C62256-55PCN
+1,U3,SST39SF010A-70-4C-PHE,DIP-32_W15.24mm_Socket,Microchip SST39SF010A-70-4C-PHE
+2,U4 U5,W65C22N6TPG-14,DIP-40_W15.24mm_Socket,WDC W65C22N6TPG-14 (N = open-drain IRQ)
+1,U6,W65C51N6TPG-14,DIP-28_W15.24mm_Socket,WDC W65C51N6TPG-14
+2,U7 U8,74HC00,DIP-14_W7.62mm_Socket,74HC00 (TI SN74HC00N)
+1,U9,74HC30,DIP-14_W7.62mm_Socket,74HC30 (TI SN74HC30N)
+1,U10,74HC138,DIP-16_W7.62mm_Socket,74HC138 (TI SN74HC138N)
+1,U11,DS1813-10+,TO-92_Inline_Wide,Analog Devices DS1813-10+
+1,U12,LM7805,TO-220-3_Vertical,LM7805 (TO-220) with a clip-on heatsink
+1,U13,LM393,DIP-8_W7.62mm_Socket,LM393N
+1,X1,3.6864MHz,Oscillator_DIP-8,ECS-100AX-036 or any 5 V HCMOS full/half-can
+1,X2,1.8432MHz,Oscillator_DIP-8,ECS-100AX-018 or any 5 V HCMOS half-can
