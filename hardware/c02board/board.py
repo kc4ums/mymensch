@@ -109,12 +109,13 @@ part('U4', 'W65C22N6TPG-14', 'DIP40', 128, 12, pins=via(VIA_COMMON, {
     39: 'V1_CA2', 40: 'R1_RX'}), mpn='WDC W65C22N6TPG-14 (N = open-drain IRQ)',
     note='must be the N version: IRQ outputs are wire-ORed')
 
-# VIA2: LCD (4-bit), flash bank, LEDs, PS/2 keyboard on CA1 (clock) / CA2 (data).
+# VIA2: LCD (4-bit), flash bank, LEDs, PS/2 keyboard on CA1 (clock) / PB4 (data).
+# Data must be on a port pin: a 65C22 can't read CA2's level, only its edges.
 part('U5', 'W65C22N6TPG-14', 'DIP40', 150, 12, pins=via(VIA_COMMON, {
     2: 'LCD_D4', 3: 'LCD_D5', 4: 'LCD_D6', 5: 'LCD_D7', 6: 'LCD_RS', 7: 'LCD_E',
-    8: 'FA15', 9: 'FA16', 10: 'LED0', 11: 'LED1', 12: 'LED2', 13: 'LED3', 14: 'V2_PB4',
+    8: 'FA15', 9: 'FA16', 10: 'LED0', 11: 'LED1', 12: 'LED2', 13: 'LED3', 14: 'KB_DATA',
     15: 'V2_PB5', 16: 'V2_PB6', 17: 'V2_PB7', 18: 'V2_CB1', 19: 'V2_CB2', 23: '~{CS1}',
-    39: 'KB_DATA', 40: 'KB_CLK'}), mpn='WDC W65C22N6TPG-14 (N = open-drain IRQ)',
+    39: 'V2_CA2', 40: 'KB_CLK'}), mpn='WDC W65C22N6TPG-14 (N = open-drain IRQ)',
     note='must be the N version: IRQ outputs are wire-ORed')
 
 # ACIA, clocked by its own 1.8432 MHz oscillator into XTLI.
@@ -221,7 +222,7 @@ part('R39', '4.7k', 'R', 172, 36, rot=90, pins={1: '+5V', 2: 'KB_DATA'})
 
 # I/O header 2x10
 part('J6', 'I/O', 'H2x10', 172, 76 + 0, rot=0, pins={
-    1: '+5V', 2: 'GND', 3: 'V2_PB4', 4: 'V2_PB5', 5: 'V2_PB6', 6: 'V2_PB7', 7: 'V2_CB1',
+    1: '+5V', 2: 'GND', 3: 'V2_CA2', 4: 'V2_PB5', 5: 'V2_PB6', 6: 'V2_PB7', 7: 'V2_CB1',
     8: 'V2_CB2', 9: 'V1_PA6', 10: 'V1_PB6', 11: 'V1_CA2', 12: 'V1_CB2', 13: '~{CS3}',
     14: '~{CS4}', 15: '~{IRQ}', 16: '~{RES}', 17: 'PHI2', 18: 'RW', 19: '~{CS5}', 20: 'GND'})
 

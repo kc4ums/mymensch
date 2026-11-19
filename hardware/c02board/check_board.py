@@ -174,7 +174,7 @@ check(pin('U13', 2) == 'VREF' and pin('U13', 6) == 'VREF' and pin('U13', 3) == '
       'LM393: both comparators on the shared 2.0 V reference')
 
 # ---------------------------------------------------------------- the rest
-check(pin('U5', 40) == 'KB_CLK' and pin('U5', 39) == 'KB_DATA', 'PS/2 clock on VIA2 CA1 (edge interrupt), data on CA2')
+check(pin('U5', 40) == 'KB_CLK' and pin('U5', 14) == 'KB_DATA', 'PS/2 clock on VIA2 CA1 (edge interrupt), data on PB4 (readable)')
 check([pin('U5', i) for i in range(2, 8)] == ['LCD_D4', 'LCD_D5', 'LCD_D6', 'LCD_D7', 'LCD_RS', 'LCD_E'],
       'LCD on VIA2 PA0-PA5 (D4-D7, RS, E)')
 check(pin('J3', 5) == 'GND', 'LCD R/W tied low (write only)')

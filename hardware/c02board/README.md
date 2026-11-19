@@ -2,7 +2,7 @@
 
 This is a single board computer for the APRS TNC and the AMTOR station: a WDC W65C02S, RAM, flash, two radio ports, an LCD and keyboard connection, and USB serial to a PC. **Every part is through-hole** and every chip sits in a socket, so it can be built and repaired with a soldering iron. The PCB is a 2-layer **185 × 125 mm** board to order from JLCPCB, PCBWay or similar.
 
-**Status: routed, DRC clean, Gerbers ready.** Placement, schematic, netlist and routing are done. KiCad's DRC shows 0 errors and 0 unconnected pads. `python mk_fab.py` writes `fab/c02comm_gerbers.zip` (not committed; regenerate it). Nothing has been built.
+**Status: routed, DRC clean, Gerbers ready.** Placement, schematic, netlist and routing are done. KiCad's DRC shows 0 errors and 0 unconnected pads. `python mk_fab.py` writes `fab/c02comm_gerbers.zip` (not committed; regenerate it). On 2026-11-19 the PS/2 data line moved from VIA2 CA2 to PB4, because a 65C22 can't read CA2's level, and the board was re-routed (run 4). Nothing has been built.
 
 ![placement](place.png)
 
@@ -57,8 +57,9 @@ This is a single board computer for the APRS TNC and the AMTOR station: a WDC W6
 | PA4 / PA5 | LCD RS / E (R/W is tied low) |
 | PA6 / PA7 | flash A15 / A16 (bank) |
 | PB0-PB3 | LED0-LED3 (lit when high) |
-| PB4-PB7, CB1, CB2 | I/O header |
-| CA1 / CA2 | PS/2 clock (interrupt on the falling edge) / data |
+| PB4 | PS/2 data (a port pin, so its level can be read) |
+| PB5-PB7, CA2, CB1, CB2 | I/O header |
+| CA1 | PS/2 clock (interrupt on the falling edge) |
 
 **Interrupts:** `/IRQ` is shared by VIA1, VIA2 and the ACIA, with a 3.3k pull-up. That's why both VIAs must be the **W65C22N** (open-drain IRQ), **not the W65C22S**, whose IRQ output is push-pull.
 
@@ -150,6 +151,8 @@ The board has 319 connections, mostly the address and data buses. They are route
 **Run 2: all 319 connections routed with 0 violations after 11 passes, but no result saved.** Claude Code stopped the run in Freerouting's final "optimizer" stage, because the PC was low on memory. `mk_fab.py` now runs Freerouting with `-mt 2` (2 threads) to use less memory.
 
 **Run 3 (2026-11-19): all 319 connections routed, 0 unconnected pads.** The optimizer pass made the score worse and was rejected, so the router's result was kept. `drc.txt` lists 6 `starved_thermal` errors: GND pads on Q1, Q2, U5, J6 and R41 whose thermal spokes reach only an isolated island of the plane. Every one of these pads also has its own GND track, so they are connected. **Fixed:** KiCad ignored the one-spoke rule in `c02comm.kicad_dru` and used the board's default minimum of 2 spokes. `mk_pcb.py` now sets `min_resolved_spokes: 1` in the project's board rules. With that, the DRC shows 0 errors, and `mk_fab.py` wrote the Gerbers.
+
+**Run 4 (2026-11-19):** re-routed after moving the PS/2 data line to PB4. All connections routed. With the one-spoke thermal setting, the DRC shows 0 errors and 0 unconnected pads.
 
 ### To re-route
 
